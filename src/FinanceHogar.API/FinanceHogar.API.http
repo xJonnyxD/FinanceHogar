@@ -1,0 +1,6 @@
+@FinanceHogar.API_HostAddress = http://localhost:5153
+
+GET {{FinanceHogar.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

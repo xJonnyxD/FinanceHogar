@@ -1,0 +1,17 @@
+using FinanceHogar.Domain.Enums;
+
+namespace FinanceHogar.Application.DTOs.Gastos;
+
+public class UpdateGastoRequest
+{
+    public Guid CategoriaId { get; set; }
+    public decimal Monto { get; set; }
+    public TipoMoneda Moneda { get; set; } = TipoMoneda.USD;
+    public decimal? MontoEnUSD { get; set; }
+    public TipoGasto Tipo { get; set; }
+    public string? Descripcion { get; set; }
+    public DateOnly FechaGasto { get; set; }
+    public bool EsRecurrente { get; set; }
+    public TipoFrecuencia? Frecuencia { get; set; }
+    public string? Comprobante { get; set; }
+}
