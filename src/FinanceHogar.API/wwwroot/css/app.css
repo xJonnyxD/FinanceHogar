@@ -1,0 +1,227 @@
+/* ============================================================
+   FinanceHogar — Estilos personalizados
+   ============================================================ */
+
+:root {
+  --fh-primary:    #1a3a5c;
+  --fh-primary-lt: #2a5298;
+  --fh-accent:     #00a878;
+  --fh-accent-lt:  #00c896;
+  --fh-danger:     #e63946;
+  --fh-warn:       #f4a261;
+  --fh-bg:         #f0f4f8;
+  --fh-sidebar-w:  260px;
+}
+
+/* ── Base ─────────────────────────────────────────────────── */
+body {
+  background: var(--fh-bg);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+#sidebar {
+  width: var(--fh-sidebar-w);
+  min-height: 100vh;
+  background: var(--fh-primary);
+  position: fixed;
+  top: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform .25s ease;
+}
+
+#sidebar .brand {
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+#sidebar .brand h5 { color: #fff; font-weight: 700; margin: 0; font-size: 1.15rem; }
+#sidebar .brand small { color: rgba(255,255,255,.55); font-size: .75rem; }
+
+#sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .65rem 1.25rem;
+  color: rgba(255,255,255,.72);
+  text-decoration: none;
+  border-radius: 8px;
+  margin: .1rem .75rem;
+  transition: background .18s, color .18s;
+  font-size: .92rem;
+}
+
+#sidebar nav a:hover,
+#sidebar nav a.active {
+  background: rgba(255,255,255,.14);
+  color: #fff;
+}
+
+#sidebar nav a.active { font-weight: 600; }
+#sidebar nav a i { width: 20px; text-align: center; font-size: 1rem; }
+
+#sidebar .sidebar-footer {
+  margin-top: auto;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255,255,255,.12);
+}
+
+/* ── Main Layout ─────────────────────────────────────────── */
+#main-content {
+  margin-left: var(--fh-sidebar-w);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top bar ─────────────────────────────────────────────── */
+#topbar {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: .85rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+#topbar .page-title { font-weight: 700; font-size: 1.2rem; color: var(--fh-primary); margin: 0; }
+
+/* ── Page content ────────────────────────────────────────── */
+.page-body { padding: 1.75rem; flex: 1; }
+
+/* ── Cards ───────────────────────────────────────────────── */
+.stat-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.4rem 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+  border-left: 4px solid transparent;
+  height: 100%;
+}
+.stat-card.income  { border-color: var(--fh-accent); }
+.stat-card.expense { border-color: var(--fh-danger); }
+.stat-card.balance { border-color: var(--fh-primary-lt); }
+.stat-card.score   { border-color: var(--fh-warn); }
+.stat-card .label  { color: #64748b; font-size: .82rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: .4rem; }
+.stat-card .value  { font-size: 1.9rem; font-weight: 700; line-height: 1.1; color: #1e293b; }
+.stat-card .sub    { font-size: .8rem; color: #94a3b8; margin-top: .35rem; }
+
+/* ── Table card ──────────────────────────────────────────── */
+.table-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+  overflow: hidden;
+}
+.table-card .card-header-fh {
+  padding: 1.1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f5f9;
+}
+.table-card .card-header-fh h6 { margin: 0; font-weight: 700; font-size: 1rem; color: #1e293b; }
+
+/* ── Badge colors ────────────────────────────────────────── */
+.badge-ingreso   { background: #dcfce7; color: #16a34a; }
+.badge-gasto     { background: #fee2e2; color: #dc2626; }
+.badge-pendiente { background: #fef9c3; color: #ca8a04; }
+.badge-pagado    { background: #dcfce7; color: #16a34a; }
+.badge-activa    { background: #dbeafe; color: #2563eb; }
+.badge-leida     { background: #f1f5f9; color: #94a3b8; }
+
+/* ── Progress bars ───────────────────────────────────────── */
+.budget-bar { height: 8px; border-radius: 99px; background: #e2e8f0; overflow: hidden; }
+.budget-bar .fill { height: 100%; border-radius: 99px; transition: width .5s ease; }
+.budget-bar .fill.safe    { background: var(--fh-accent); }
+.budget-bar .fill.warning { background: var(--fh-warn); }
+.budget-bar .fill.danger  { background: var(--fh-danger); }
+
+/* ── Auth page ───────────────────────────────────────────── */
+#auth-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--fh-primary) 0%, var(--fh-primary-lt) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2.5rem 2.25rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+}
+
+.auth-card .logo { font-size: 2rem; color: var(--fh-primary); margin-bottom: .5rem; }
+.auth-card h4 { font-weight: 800; color: var(--fh-primary); }
+
+/* ── Score gauge ─────────────────────────────────────────── */
+.score-ring {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; font-weight: 800;
+  margin: 0 auto .5rem;
+}
+.score-ring.critico   { background: #fee2e2; color: #dc2626; border: 6px solid #dc2626; }
+.score-ring.regular   { background: #fef9c3; color: #ca8a04; border: 6px solid #ca8a04; }
+.score-ring.bueno     { background: #dcfce7; color: #16a34a; border: 6px solid #16a34a; }
+.score-ring.excelente { background: #dbeafe; color: #2563eb; border: 6px solid #2563eb; }
+
+/* ── Misc ────────────────────────────────────────────────── */
+.action-btn { border: none; background: none; cursor: pointer; padding: .25rem .5rem; border-radius: 6px; }
+.action-btn:hover { background: #f1f5f9; }
+
+.empty-state { text-align: center; padding: 3rem; color: #94a3b8; }
+.empty-state i { font-size: 3rem; display: block; margin-bottom: 1rem; }
+
+.section-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  #sidebar { transform: translateX(-100%); }
+  #sidebar.open { transform: translateX(0); }
+  #main-content { margin-left: 0; }
+}
+
+/* ── Table tweaks ────────────────────────────────────────── */
+.table th { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: #64748b; font-weight: 600; border-bottom-width: 1px; }
+.table td { font-size: .9rem; vertical-align: middle; }
+
+/* ── Form tweaks ─────────────────────────────────────────── */
+.form-control:focus, .form-select:focus { border-color: var(--fh-primary-lt); box-shadow: 0 0 0 3px rgba(42,82,152,.18); }
+.btn-primary { background: var(--fh-primary); border-color: var(--fh-primary); }
+.btn-primary:hover { background: var(--fh-primary-lt); border-color: var(--fh-primary-lt); }
+.btn-success { background: var(--fh-accent); border-color: var(--fh-accent); }
+.btn-success:hover { background: var(--fh-accent-lt); border-color: var(--fh-accent-lt); }
+
+.modal-header { background: var(--fh-primary); color: #fff; }
+.modal-header .btn-close { filter: invert(1); }
+.modal-title { font-weight: 700; }
+
+/* Spinner */
+.fh-spinner {
+  display: inline-block; width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: #fff; border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

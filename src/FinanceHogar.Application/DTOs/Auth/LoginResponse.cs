@@ -6,6 +6,7 @@ public class LoginResponse
     public string RefreshToken { get; set; } = string.Empty;
     public DateTime Expiration { get; set; }
     public Guid UsuarioId { get; set; }
+    public Guid HogarId { get; set; }
     public string NombreCompleto { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
 }

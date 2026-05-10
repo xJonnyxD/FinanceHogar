@@ -3,17 +3,20 @@ using System;
 using FinanceHogar.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace FinanceHogar.Infrastructure.Data.Migrations
+namespace FinanceHogar.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260510202005_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,85 +29,64 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("CategoriaId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("categoria_id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Estado")
-                        .HasColumnType("integer")
-                        .HasColumnName("estado");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("FechaGenerada")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("fecha_generada");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("FechaLeida")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("fecha_leida");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("HogarId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("hogar_id");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Mensaje")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("mensaje");
+                        .HasColumnType("text");
 
                     b.Property<decimal?>("PorcentajeUso")
-                        .HasColumnType("decimal(5,2)")
-                        .HasColumnName("porcentaje_uso");
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("integer")
-                        .HasColumnName("tipo");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("titulo");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("UsuarioId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("usuario_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_alertas");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CategoriaId")
-                        .HasDatabaseName("ix_alertas_categoria_id");
+                    b.HasIndex("CategoriaId");
 
-                    b.HasIndex("Estado")
-                        .HasDatabaseName("ix_alertas_estado");
+                    b.HasIndex("Estado");
 
-                    b.HasIndex("HogarId")
-                        .HasDatabaseName("ix_alertas_hogar_id");
+                    b.HasIndex("HogarId");
 
-                    b.HasIndex("Tipo")
-                        .HasDatabaseName("ix_alertas_tipo");
+                    b.HasIndex("Tipo");
 
-                    b.HasIndex("UsuarioId")
-                        .HasDatabaseName("ix_alertas_usuario_id");
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Alertas", (string)null);
                 });
@@ -113,69 +95,53 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Color")
                         .HasMaxLength(7)
-                        .HasColumnType("character varying(7)")
-                        .HasColumnName("color");
+                        .HasColumnType("character varying(7)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
-                        .HasColumnName("descripcion");
+                        .HasColumnType("character varying(300)");
 
                     b.Property<bool>("EsGlobal")
-                        .HasColumnType("boolean")
-                        .HasColumnName("es_global");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("EsIngreso")
-                        .HasColumnType("boolean")
-                        .HasColumnName("es_ingreso");
+                        .HasColumnType("boolean");
 
                     b.Property<Guid?>("HogarId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("hogar_id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Icono")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("icono");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("nombre");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id")
-                        .HasName("pk_categorias");
+                    b.HasKey("Id");
 
-                    b.HasIndex("EsGlobal")
-                        .HasDatabaseName("ix_categorias_es_global");
+                    b.HasIndex("EsGlobal");
 
-                    b.HasIndex("EsIngreso")
-                        .HasDatabaseName("ix_categorias_es_ingreso");
+                    b.HasIndex("EsIngreso");
 
-                    b.HasIndex("HogarId")
-                        .HasDatabaseName("ix_categorias_hogar_id");
+                    b.HasIndex("HogarId");
 
                     b.ToTable("Categorias", (string)null);
 
@@ -340,99 +306,74 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("CategoriaId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("categoria_id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Comprobante")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("comprobante");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("descripcion");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("EsRecurrente")
-                        .HasColumnType("boolean")
-                        .HasColumnName("es_recurrente");
+                        .HasColumnType("boolean");
 
                     b.Property<DateOnly>("FechaGasto")
-                        .HasColumnType("date")
-                        .HasColumnName("fecha_gasto");
+                        .HasColumnType("date");
 
                     b.Property<int?>("Frecuencia")
-                        .HasColumnType("integer")
-                        .HasColumnName("frecuencia");
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("HogarId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("hogar_id");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Moneda")
-                        .HasColumnType("integer")
-                        .HasColumnName("moneda");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("Monto")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("monto");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("MontoEnUSD")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("monto_en_usd");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid?>("ServicioBasicoId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("servicio_basico_id");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("integer")
-                        .HasColumnName("tipo");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UsuarioId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("usuario_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_gastos");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CategoriaId")
-                        .HasDatabaseName("ix_gastos_categoria_id");
+                    b.HasIndex("CategoriaId");
 
-                    b.HasIndex("FechaGasto")
-                        .HasDatabaseName("ix_gastos_fecha_gasto");
+                    b.HasIndex("FechaGasto");
 
-                    b.HasIndex("HogarId")
-                        .HasDatabaseName("ix_gastos_hogar_id");
+                    b.HasIndex("HogarId");
 
-                    b.HasIndex("ServicioBasicoId")
-                        .HasDatabaseName("ix_gastos_servicio_basico_id");
+                    b.HasIndex("ServicioBasicoId");
 
-                    b.HasIndex("UsuarioId")
-                        .HasDatabaseName("ix_gastos_usuario_id");
+                    b.HasIndex("UsuarioId");
 
-                    b.HasIndex("HogarId", "FechaGasto")
-                        .HasDatabaseName("ix_gastos_hogar_id_fecha_gasto");
+                    b.HasIndex("HogarId", "FechaGasto");
 
                     b.ToTable("Gastos", (string)null);
                 });
@@ -441,67 +382,53 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Departamento")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("departamento");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("descripcion");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("MonedaPrincipal")
-                        .HasColumnType("integer")
-                        .HasColumnName("moneda_principal");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Municipio")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("municipio");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)")
-                        .HasColumnName("nombre");
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("Pais")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasDefaultValue("El Salvador")
-                        .HasColumnName("pais");
+                        .HasDefaultValue("El Salvador");
 
                     b.Property<decimal>("PresupuestoMensualTotal")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("presupuesto_mensual_total");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id")
-                        .HasName("pk_hogares");
+                    b.HasKey("Id");
 
-                    b.HasIndex("Departamento")
-                        .HasDatabaseName("ix_hogares_departamento");
+                    b.HasIndex("Departamento");
 
                     b.ToTable("Hogares", (string)null);
                 });
@@ -510,60 +437,45 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("EsAdministrador")
-                        .HasColumnType("boolean")
-                        .HasColumnName("es_administrador");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("FechaIngreso")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("fecha_ingreso");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("HogarId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("hogar_id");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<Guid>("RolId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("rol_id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UsuarioId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("usuario_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_hogar_usuarios");
+                    b.HasKey("Id");
 
-                    b.HasIndex("HogarId")
-                        .HasDatabaseName("ix_hogar_usuarios_hogar_id");
+                    b.HasIndex("HogarId");
 
-                    b.HasIndex("RolId")
-                        .HasDatabaseName("ix_hogar_usuarios_rol_id");
+                    b.HasIndex("RolId");
 
-                    b.HasIndex("UsuarioId")
-                        .HasDatabaseName("ix_hogar_usuarios_usuario_id");
+                    b.HasIndex("UsuarioId");
 
                     b.HasIndex("HogarId", "UsuarioId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_hogar_usuarios_hogar_id_usuario_id");
+                        .IsUnique();
 
                     b.ToTable("HogarUsuarios", (string)null);
                 });
@@ -572,94 +484,70 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("CategoriaId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("categoria_id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("descripcion");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("EsRecurrente")
-                        .HasColumnType("boolean")
-                        .HasColumnName("es_recurrente");
+                        .HasColumnType("boolean");
 
                     b.Property<DateOnly>("FechaIngreso")
-                        .HasColumnType("date")
-                        .HasColumnName("fecha_ingreso");
+                        .HasColumnType("date");
 
                     b.Property<int?>("Frecuencia")
-                        .HasColumnType("integer")
-                        .HasColumnName("frecuencia");
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("HogarId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("hogar_id");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Moneda")
-                        .HasColumnType("integer")
-                        .HasColumnName("moneda");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("Monto")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("monto");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("MontoEnUSD")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("monto_en_usd");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid?>("RemesaId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("remesa_id");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("integer")
-                        .HasColumnName("tipo");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UsuarioId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("usuario_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_ingresos");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CategoriaId")
-                        .HasDatabaseName("ix_ingresos_categoria_id");
+                    b.HasIndex("CategoriaId");
 
-                    b.HasIndex("FechaIngreso")
-                        .HasDatabaseName("ix_ingresos_fecha_ingreso");
+                    b.HasIndex("FechaIngreso");
 
-                    b.HasIndex("HogarId")
-                        .HasDatabaseName("ix_ingresos_hogar_id");
+                    b.HasIndex("HogarId");
 
-                    b.HasIndex("RemesaId")
-                        .HasDatabaseName("ix_ingresos_remesa_id");
+                    b.HasIndex("RemesaId");
 
-                    b.HasIndex("UsuarioId")
-                        .HasDatabaseName("ix_ingresos_usuario_id");
+                    b.HasIndex("UsuarioId");
 
-                    b.HasIndex("HogarId", "FechaIngreso")
-                        .HasDatabaseName("ix_ingresos_hogar_id_fecha_ingreso");
+                    b.HasIndex("HogarId", "FechaIngreso");
 
                     b.ToTable("Ingresos", (string)null);
                 });
@@ -668,61 +556,46 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Anio")
-                        .HasColumnType("integer")
-                        .HasColumnName("anio");
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("CategoriaId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("categoria_id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("HogarId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("hogar_id");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Mes")
-                        .HasColumnType("integer")
-                        .HasColumnName("mes");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("MontoGastado")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("monto_gastado");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("MontoLimite")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("monto_limite");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id")
-                        .HasName("pk_presupuestos_mensuales");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CategoriaId")
-                        .HasDatabaseName("ix_presupuestos_mensuales_categoria_id");
+                    b.HasIndex("CategoriaId");
 
-                    b.HasIndex("Anio", "Mes")
-                        .HasDatabaseName("ix_presupuestos_mensuales_anio_mes");
+                    b.HasIndex("Anio", "Mes");
 
                     b.HasIndex("HogarId", "CategoriaId", "Anio", "Mes")
-                        .IsUnique()
-                        .HasDatabaseName("ix_presupuestos_mensuales_hogar_id_categoria_id_anio_mes");
+                        .IsUnique();
 
                     b.ToTable("PresupuestosMensuales", (string)null);
                 });
@@ -731,85 +604,65 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<decimal?>("ComisionCobrada")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("comision_cobrada");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Empresa")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("empresa");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateOnly>("FechaRecibida")
-                        .HasColumnType("date")
-                        .HasColumnName("fecha_recibida");
+                        .HasColumnType("date");
 
                     b.Property<Guid>("HogarId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("hogar_id");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Moneda")
-                        .HasColumnType("integer")
-                        .HasColumnName("moneda");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("Monto")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("monto");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("NombreRemitente")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("nombre_remitente");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("NumeroConfirmacion")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("numero_confirmacion");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("PaisOrigen")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("pais_origen");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Proposito")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
-                        .HasColumnName("proposito");
+                        .HasColumnType("character varying(300)");
 
                     b.Property<Guid>("ReceptorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("receptor_id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id")
-                        .HasName("pk_remesas");
+                    b.HasKey("Id");
 
-                    b.HasIndex("FechaRecibida")
-                        .HasDatabaseName("ix_remesas_fecha_recibida");
+                    b.HasIndex("FechaRecibida");
 
-                    b.HasIndex("HogarId")
-                        .HasDatabaseName("ix_remesas_hogar_id");
+                    b.HasIndex("HogarId");
 
-                    b.HasIndex("ReceptorId")
-                        .HasDatabaseName("ix_remesas_receptor_id");
+                    b.HasIndex("ReceptorId");
 
                     b.ToTable("Remesas", (string)null);
                 });
@@ -818,42 +671,33 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("descripcion");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("nombre");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id")
-                        .HasName("pk_roles");
+                    b.HasKey("Id");
 
                     b.HasIndex("Nombre")
-                        .IsUnique()
-                        .HasDatabaseName("ix_roles_nombre");
+                        .IsUnique();
 
                     b.ToTable("Roles", (string)null);
 
@@ -880,90 +724,68 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("DiasAnticipacionNotificacion")
-                        .HasColumnType("integer")
-                        .HasColumnName("dias_anticipacion_notificacion");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("EstaVencido")
-                        .HasColumnType("boolean")
-                        .HasColumnName("esta_vencido");
+                        .HasColumnType("boolean");
 
                     b.Property<DateOnly?>("FechaUltimoPago")
-                        .HasColumnType("date")
-                        .HasColumnName("fecha_ultimo_pago");
+                        .HasColumnType("date");
 
                     b.Property<DateOnly>("FechaVencimiento")
-                        .HasColumnType("date")
-                        .HasColumnName("fecha_vencimiento");
+                        .HasColumnType("date");
 
                     b.Property<Guid>("HogarId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("hogar_id");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<decimal?>("MontoPromedio")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("monto_promedio");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("MontoUltimoPago")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("monto_ultimo_pago");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("NombreProveedor")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("nombre_proveedor");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<bool>("NotificacionActiva")
-                        .HasColumnType("boolean")
-                        .HasColumnName("notificacion_activa");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("NumeroCuenta")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("numero_cuenta");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("TipoServicio")
-                        .HasColumnType("integer")
-                        .HasColumnName("tipo_servicio");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UsuarioId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("usuario_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_servicios_basicos");
+                    b.HasKey("Id");
 
-                    b.HasIndex("FechaVencimiento")
-                        .HasDatabaseName("ix_servicios_basicos_fecha_vencimiento");
+                    b.HasIndex("FechaVencimiento");
 
-                    b.HasIndex("HogarId")
-                        .HasDatabaseName("ix_servicios_basicos_hogar_id");
+                    b.HasIndex("HogarId");
 
-                    b.HasIndex("TipoServicio")
-                        .HasDatabaseName("ix_servicios_basicos_tipo_servicio");
+                    b.HasIndex("TipoServicio");
 
-                    b.HasIndex("UsuarioId")
-                        .HasDatabaseName("ix_servicios_basicos_usuario_id");
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("ServiciosBasicos", (string)null);
                 });
@@ -972,78 +794,59 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("CuotaMensual")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("cuota_mensual");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Estado")
-                        .HasColumnType("integer")
-                        .HasColumnName("estado");
+                        .HasColumnType("integer");
 
                     b.Property<DateOnly?>("FechaFin")
-                        .HasColumnType("date")
-                        .HasColumnName("fecha_fin");
+                        .HasColumnType("date");
 
                     b.Property<DateOnly>("FechaInicio")
-                        .HasColumnType("date")
-                        .HasColumnName("fecha_inicio");
+                        .HasColumnType("date");
 
                     b.Property<int>("Frecuencia")
-                        .HasColumnType("integer")
-                        .HasColumnName("frecuencia");
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("HogarId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("hogar_id");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)")
-                        .HasColumnName("nombre");
+                        .HasColumnType("character varying(150)");
 
                     b.Property<Guid>("OrganizadorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("organizador_id");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("TotalParticipantes")
-                        .HasColumnType("integer")
-                        .HasColumnName("total_participantes");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TurnoActual")
-                        .HasColumnType("integer")
-                        .HasColumnName("turno_actual");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id")
-                        .HasName("pk_tandas");
+                    b.HasKey("Id");
 
-                    b.HasIndex("Estado")
-                        .HasDatabaseName("ix_tandas_estado");
+                    b.HasIndex("Estado");
 
-                    b.HasIndex("HogarId")
-                        .HasDatabaseName("ix_tandas_hogar_id");
+                    b.HasIndex("HogarId");
 
-                    b.HasIndex("OrganizadorId")
-                        .HasDatabaseName("ix_tandas_organizador_id");
+                    b.HasIndex("OrganizadorId");
 
                     b.ToTable("Tandas", (string)null);
                 });
@@ -1052,65 +855,49 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("CuotasPagadas")
-                        .HasColumnType("integer")
-                        .HasColumnName("cuotas_pagadas");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("FechaRecibio")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("fecha_recibio");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("HaRecibido")
-                        .HasColumnType("boolean")
-                        .HasColumnName("ha_recibido");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("NumeroTurno")
-                        .HasColumnType("integer")
-                        .HasColumnName("numero_turno");
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("TandaId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tanda_id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UsuarioId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("usuario_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_tanda_participantes");
+                    b.HasKey("Id");
 
-                    b.HasIndex("TandaId")
-                        .HasDatabaseName("ix_tanda_participantes_tanda_id");
+                    b.HasIndex("TandaId");
 
-                    b.HasIndex("UsuarioId")
-                        .HasDatabaseName("ix_tanda_participantes_usuario_id");
+                    b.HasIndex("UsuarioId");
 
                     b.HasIndex("TandaId", "NumeroTurno")
-                        .IsUnique()
-                        .HasDatabaseName("ix_tanda_participantes_tanda_id_numero_turno");
+                        .IsUnique();
 
                     b.HasIndex("TandaId", "UsuarioId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_tanda_participantes_tanda_id_usuario_id");
+                        .IsUnique();
 
                     b.ToTable("TandaParticipantes", (string)null);
                 });
@@ -1119,77 +906,60 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DUI")
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("dui");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("email");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EstaActivo")
-                        .HasColumnType("boolean")
-                        .HasColumnName("esta_activo");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("NombreCompleto")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("nombre_completo");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("password_hash");
+                        .HasColumnType("text");
 
                     b.Property<string>("RefreshToken")
-                        .HasColumnType("text")
-                        .HasColumnName("refresh_token");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("RefreshTokenExpiry")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("refresh_token_expiry");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Telefono")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("telefono");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id")
-                        .HasName("pk_usuarios");
+                    b.HasKey("Id");
 
                     b.HasIndex("DUI")
-                        .IsUnique()
-                        .HasDatabaseName("ix_usuarios_dui");
+                        .IsUnique();
 
                     b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("ix_usuarios_email");
+                        .IsUnique();
 
-                    b.HasIndex("EstaActivo")
-                        .HasDatabaseName("ix_usuarios_esta_activo");
+                    b.HasIndex("EstaActivo");
 
                     b.ToTable("Usuarios", (string)null);
                 });
@@ -1199,21 +969,18 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                     b.HasOne("FinanceHogar.Domain.Entities.Categoria", "Categoria")
                         .WithMany()
                         .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("fk_alertas_categorias_categoria_id");
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("FinanceHogar.Domain.Entities.Hogar", "Hogar")
                         .WithMany("Alertas")
                         .HasForeignKey("HogarId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_alertas_hogares_hogar_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("fk_alertas_usuarios_usuario_id");
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Categoria");
 
@@ -1227,8 +994,7 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                     b.HasOne("FinanceHogar.Domain.Entities.Hogar", "Hogar")
                         .WithMany("Categorias")
                         .HasForeignKey("HogarId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("fk_categorias_hogares_hogar_id");
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Hogar");
                 });
@@ -1239,28 +1005,24 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                         .WithMany("Gastos")
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_gastos_categorias_categoria_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.Hogar", "Hogar")
                         .WithMany()
                         .HasForeignKey("HogarId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_gastos_hogares_hogar_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.ServicioBasico", "ServicioBasico")
                         .WithMany("Pagos")
                         .HasForeignKey("ServicioBasicoId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("fk_gastos_servicios_basicos_servicio_basico_id");
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("FinanceHogar.Domain.Entities.Usuario", "Usuario")
                         .WithMany("Gastos")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_gastos_usuarios_usuario_id");
+                        .IsRequired();
 
                     b.Navigation("Categoria");
 
@@ -1277,22 +1039,19 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                         .WithMany("HogarUsuarios")
                         .HasForeignKey("HogarId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_hogar_usuarios_hogares_hogar_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.Rol", "Rol")
                         .WithMany("HogarUsuarios")
                         .HasForeignKey("RolId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_hogar_usuarios_roles_rol_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.Usuario", "Usuario")
                         .WithMany("HogarUsuarios")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_hogar_usuarios_usuarios_usuario_id");
+                        .IsRequired();
 
                     b.Navigation("Hogar");
 
@@ -1307,28 +1066,24 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                         .WithMany("Ingresos")
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_ingresos_categorias_categoria_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.Hogar", "Hogar")
                         .WithMany()
                         .HasForeignKey("HogarId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_ingresos_hogares_hogar_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.Remesa", "Remesa")
                         .WithMany("Ingresos")
                         .HasForeignKey("RemesaId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("fk_ingresos_remesas_remesa_id");
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("FinanceHogar.Domain.Entities.Usuario", "Usuario")
                         .WithMany("Ingresos")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_ingresos_usuarios_usuario_id");
+                        .IsRequired();
 
                     b.Navigation("Categoria");
 
@@ -1345,15 +1100,13 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                         .WithMany("Presupuestos")
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_presupuestos_mensuales_categorias_categoria_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.Hogar", "Hogar")
                         .WithMany("Presupuestos")
                         .HasForeignKey("HogarId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_presupuestos_mensuales_hogares_hogar_id");
+                        .IsRequired();
 
                     b.Navigation("Categoria");
 
@@ -1366,15 +1119,13 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                         .WithMany("Remesas")
                         .HasForeignKey("HogarId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_remesas_hogares_hogar_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.Usuario", "Receptor")
                         .WithMany("RemesasRecibidas")
                         .HasForeignKey("ReceptorId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_remesas_usuarios_receptor_id");
+                        .IsRequired();
 
                     b.Navigation("Hogar");
 
@@ -1387,15 +1138,13 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                         .WithMany()
                         .HasForeignKey("HogarId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_servicios_basicos_hogares_hogar_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.Usuario", "Usuario")
                         .WithMany("ServiciosBasicos")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_servicios_basicos_usuarios_usuario_id");
+                        .IsRequired();
 
                     b.Navigation("Hogar");
 
@@ -1408,15 +1157,13 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                         .WithMany("Tandas")
                         .HasForeignKey("HogarId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_tandas_hogares_hogar_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.Usuario", "Organizador")
                         .WithMany()
                         .HasForeignKey("OrganizadorId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_tandas_usuarios_organizador_id");
+                        .IsRequired();
 
                     b.Navigation("Hogar");
 
@@ -1429,15 +1176,13 @@ namespace FinanceHogar.Infrastructure.Data.Migrations
                         .WithMany("Participantes")
                         .HasForeignKey("TandaId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_tanda_participantes_tandas_tanda_id");
+                        .IsRequired();
 
                     b.HasOne("FinanceHogar.Domain.Entities.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_tanda_participantes_usuarios_usuario_id");
+                        .IsRequired();
 
                     b.Navigation("Tanda");
 

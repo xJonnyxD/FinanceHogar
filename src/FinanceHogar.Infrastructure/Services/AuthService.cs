@@ -136,6 +136,7 @@ public class AuthService : IAuthService
             RefreshToken  = refreshToken,
             Expiration    = expiration,
             UsuarioId     = usuario.Id,
+            HogarId       = hogarId,
             NombreCompleto = usuario.NombreCompleto,
             Email         = usuario.Email
         };

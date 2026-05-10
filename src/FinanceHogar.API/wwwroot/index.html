@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinanceHogar — Control Financiero Familiar</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <!-- App CSS -->
+  <link href="/css/app.css" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     ROOT — Alpine.js store drives page visibility
+══════════════════════════════════════════════════════════ -->
+<div x-data>
+
+<!-- ────────────────────────────────────────────────────────
+     AUTH PAGE
+────────────────────────────────────────────────────────── -->
+<div id="auth-page" x-data="authPage()" x-show="$store.fh.page === 'login'">
+  <div class="auth-card">
+    <div class="text-center mb-3">
+      <i class="bi bi-house-heart-fill logo"></i>
+      <h4>FinanceHogar</h4>
+      <p class="text-muted small mb-0">Control financiero para familias salvadoreñas</p>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-pills nav-fill mb-4">
+      <li class="nav-item"><button class="nav-link w-100" :class="{active: tab==='login'}"    @click="tab='login'">Iniciar sesión</button></li>
+      <li class="nav-item"><button class="nav-link w-100" :class="{active: tab==='register'}" @click="tab='register'">Registrarse</button></li>
+    </ul>
+
+    <!-- Alert -->
+    <div x-show="error" class="alert alert-danger py-2 small" x-text="error"></div>
+
+    <!-- Acceso rápido de prueba -->
+    <div x-show="tab==='login'" class="mb-3">
+      <p class="text-muted small text-center mb-2">Acceso rápido (demo)</p>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-primary btn-sm flex-fill"
+                @click="loginEmail='admin@financehogar.com'; loginPass='Admin1234!'">
+          <i class="bi bi-shield-lock me-1"></i>Admin
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm flex-fill"
+                @click="loginEmail='usuario@financehogar.com'; loginPass='User1234!'">
+          <i class="bi bi-person me-1"></i>Usuario
+        </button>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <form x-show="tab==='login'" @submit.prevent="doLogin">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Correo electrónico</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+          <input type="email" class="form-control" x-model="loginEmail" placeholder="correo@ejemplo.com" required />
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="form-label fw-semibold">Contraseña</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-lock"></i></span>
+          <input type="password" class="form-control" x-model="loginPass" placeholder="••••••••" required />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary w-100 py-2" :disabled="loading">
+        <span x-show="loading" class="fh-spinner me-2"></span>
+        <span x-text="loading ? 'Iniciando...' : 'Iniciar sesión'"></span>
+      </button>
+    </form>
+
+    <!-- REGISTER -->
+    <form x-show="tab==='register'" @submit.prevent="doRegister">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label fw-semibold">Nombre completo *</label>
+          <input type="text" class="form-control" x-model="regNombre" placeholder="Juan Pérez García" required />
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-semibold">Correo electrónico *</label>
+          <input type="email" class="form-control" x-model="regEmail" placeholder="correo@ejemplo.com" required />
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-semibold">Contraseña *</label>
+          <input type="password" class="form-control" x-model="regPass" placeholder="Mínimo 6 caracteres" required />
+        </div>
+        <div class="col-6">
+          <label class="form-label fw-semibold">Teléfono</label>
+          <input type="tel" class="form-control" x-model="regTel" placeholder="7000-0000" />
+        </div>
+        <div class="col-6">
+          <label class="form-label fw-semibold">DUI</label>
+          <input type="text" class="form-control" x-model="regDUI" placeholder="00000000-0" />
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-semibold">Nombre del hogar *</label>
+          <input type="text" class="form-control" x-model="regHogar" placeholder="Familia García" required />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success w-100 py-2 mt-4" :disabled="loading">
+        <span x-show="loading" class="fh-spinner me-2"></span>
+        <span x-text="loading ? 'Creando cuenta...' : 'Crear cuenta'"></span>
+      </button>
+    </form>
+
+    <p class="text-center text-muted small mt-4 mb-0">🇸🇻 Hecho para El Salvador — USD &amp; Bitcoin</p>
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────────────────────
+     MAIN APP (sidebar + content)
+────────────────────────────────────────────────────────── -->
+<div x-show="$store.fh.page !== 'login'" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="brand">
+      <h5><i class="bi bi-house-heart-fill me-2"></i>FinanceHogar</h5>
+      <small x-text="$store.fh.hogar?.nombre ?? 'Mi Hogar'"></small>
+    </div>
+
+    <nav class="py-2 flex-grow-1">
+      <a href="#" @click.prevent="$store.fh.nav('dashboard')"
+         :class="{active: $store.fh.page==='dashboard'}">
+        <i class="bi bi-speedometer2"></i> Dashboard
+      </a>
+      <a href="#" @click.prevent="$store.fh.nav('gastos')"
+         :class="{active: $store.fh.page==='gastos'}">
+        <i class="bi bi-arrow-up-circle"></i> Gastos
+      </a>
+      <a href="#" @click.prevent="$store.fh.nav('ingresos')"
+         :class="{active: $store.fh.page==='ingresos'}">
+        <i class="bi bi-arrow-down-circle"></i> Ingresos
+      </a>
+      <a href="#" @click.prevent="$store.fh.nav('presupuestos')"
+         :class="{active: $store.fh.page==='presupuestos'}">
+        <i class="bi bi-bar-chart-line"></i> Presupuestos
+      </a>
+      <a href="#" @click.prevent="$store.fh.nav('alertas')"
+         :class="{active: $store.fh.page==='alertas'}">
+        <i class="bi bi-bell"></i> Alertas
+        <span x-show="$store.fh.alertasNoLeidas > 0" class="ms-auto badge bg-danger"
+              x-text="$store.fh.alertasNoLeidas"></span>
+      </a>
+      <hr style="border-color:rgba(255,255,255,.15); margin:.5rem 1.25rem">
+      <a href="#" @click.prevent="$store.fh.nav('servicios')"
+         :class="{active: $store.fh.page==='servicios'}">
+        <i class="bi bi-lightning-charge"></i> Servicios Básicos
+      </a>
+      <a href="#" @click.prevent="$store.fh.nav('tandas')"
+         :class="{active: $store.fh.page==='tandas'}">
+        <i class="bi bi-people"></i> Tandas
+      </a>
+      <a href="#" @click.prevent="$store.fh.nav('remesas')"
+         :class="{active: $store.fh.page==='remesas'}">
+        <i class="bi bi-send"></i> Remesas
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <div class="rounded-circle bg-white d-flex align-items-center justify-content-center" style="width:34px;height:34px;flex-shrink:0">
+          <i class="bi bi-person-fill text-primary"></i>
+        </div>
+        <div style="overflow:hidden">
+          <div class="text-white small fw-semibold text-truncate" x-text="$store.fh.user?.nombre ?? 'Usuario'"></div>
+          <div class="text-white-50" style="font-size:.72rem;text-truncate:1" x-text="$store.fh.user?.email ?? ''"></div>
+        </div>
+      </div>
+      <button class="btn btn-sm w-100 text-white mt-1" style="background:rgba(255,255,255,.12)"
+              @click="api.logout(); window.dispatchEvent(new CustomEvent('fh:logout'))">
+        <i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div id="main-content">
+
+    <!-- TOP BAR -->
+    <div id="topbar">
+      <h6 class="page-title" x-text="{
+        dashboard: '📊 Dashboard',
+        gastos: '💸 Gastos',
+        ingresos: '💰 Ingresos',
+        presupuestos: '📈 Presupuestos',
+        alertas: '🔔 Alertas',
+        servicios: '⚡ Servicios Básicos',
+        tandas: '🤝 Tandas',
+        remesas: '✈️ Remesas'
+      }[$store.fh.page] ?? 'FinanceHogar'"></h6>
+
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge text-bg-light border small">
+          <i class="bi bi-calendar3 me-1"></i>
+          <span x-text="new Date().toLocaleDateString('es-SV', {weekday:'short', day:'numeric', month:'short', year:'numeric'})"></span>
+        </span>
+      </div>
+    </div>
+
+    <!-- ══════ DASHBOARD PAGE ══════ -->
+    <div class="page-body" x-show="$store.fh.page==='dashboard'"
+         x-data="dashboard()">
+
+      <!-- Spinner -->
+      <div x-show="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" style="width:3rem;height:3rem"></div>
+        <p class="text-muted mt-3">Cargando dashboard...</p>
+      </div>
+
+      <div x-show="!loading">
+        <!-- Stat cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="stat-card income">
+              <div class="label"><i class="bi bi-arrow-down-circle me-1"></i>Ingresos del mes</div>
+              <div class="value text-success" x-text="fmt(balance?.totalIngresos)"></div>
+              <div class="sub" x-text="mesNombre"></div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card expense">
+              <div class="label"><i class="bi bi-arrow-up-circle me-1"></i>Gastos del mes</div>
+              <div class="value text-danger" x-text="fmt(balance?.totalGastos)"></div>
+              <div class="sub" x-text="mesNombre"></div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card balance">
+              <div class="label"><i class="bi bi-wallet2 me-1"></i>Balance</div>
+              <div class="value" :class="(balance?.balance??0)>=0 ? 'text-success':'text-danger'"
+                   x-text="fmt(balance?.balance)"></div>
+              <div class="sub">Ingresos - Gastos</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card score">
+              <div class="label"><i class="bi bi-star me-1"></i>Puntaje financiero</div>
+              <div class="value" x-text="puntaje ? puntaje.puntaje.toFixed(0)+'/100' : '—'"></div>
+              <div class="sub" x-text="puntaje?.nivel ?? 'Sin datos'"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row g-3 mb-4">
+          <div class="col-lg-5">
+            <div class="section-card">
+              <h6 class="fw-bold mb-3">Gastos por categoría</h6>
+              <div style="height:240px;position:relative">
+                <canvas id="chartGastos"></canvas>
+                <div x-show="!balance?.gastosPorCategoria?.length" class="empty-state" style="padding:1rem">
+                  <i class="bi bi-pie-chart"></i>
+                  <p class="small">Sin gastos este mes</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <div class="section-card">
+              <h6 class="fw-bold mb-3">Tendencia últimos 6 meses</h6>
+              <div style="height:240px;position:relative">
+                <canvas id="chartTendencias"></canvas>
+                <div x-show="!tendencias?.length" class="empty-state" style="padding:1rem">
+                  <i class="bi bi-bar-chart"></i>
+                  <p class="small">Sin datos de tendencias</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Score + Recomendaciones -->
+        <div class="row g-3" x-show="puntaje">
+          <div class="col-md-4">
+            <div class="section-card text-center">
+              <h6 class="fw-bold mb-3">Puntaje Financiero</h6>
+              <div class="score-ring" :class="scoreClass" x-text="puntaje?.puntaje?.toFixed(0)"></div>
+              <p class="fw-bold mb-1" x-text="puntaje?.nivel"></p>
+              <p class="small text-muted mb-0">Tasa de ahorro: <span class="fw-semibold" x-text="(puntaje?.tasaAhorro*100).toFixed(1)+'%'"></span></p>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div class="section-card">
+              <h6 class="fw-bold mb-3"><i class="bi bi-lightbulb me-1 text-warning"></i>Recomendaciones</h6>
+              <ul class="list-unstyled mb-0">
+                <template x-for="rec in puntaje?.recomendaciones ?? []" :key="rec">
+                  <li class="d-flex gap-2 mb-2">
+                    <i class="bi bi-check-circle-fill text-success mt-1 flex-shrink-0"></i>
+                    <span class="small" x-text="rec"></span>
+                  </li>
+                </template>
+                <li x-show="!puntaje?.recomendaciones?.length" class="text-muted small">Sin recomendaciones por ahora.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ GASTOS PAGE ══════ -->
+    <div class="page-body" x-show="$store.fh.page==='gastos'"
+         x-data="gastosPage()">
+
+      <!-- Header actions -->
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+          <input type="date" class="form-control form-control-sm" style="width:auto" x-model="filterDesde" placeholder="Desde">
+          <input type="date" class="form-control form-control-sm" style="width:auto" x-model="filterHasta" placeholder="Hasta">
+          <button class="btn btn-outline-secondary btn-sm" @click="applyFilter">
+            <i class="bi bi-funnel me-1"></i>Filtrar
+          </button>
+        </div>
+        <button class="btn btn-primary btn-sm" @click="openCreate">
+          <i class="bi bi-plus-lg me-1"></i>Nuevo Gasto
+        </button>
+      </div>
+
+      <div class="table-card">
+        <div class="card-header-fh">
+          <h6>Lista de Gastos <span class="badge bg-light text-dark ms-1" x-text="items.length"></span></h6>
+        </div>
+        <div x-show="loading" class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+        <div x-show="!loading && items.length===0" class="empty-state">
+          <i class="bi bi-receipt"></i><p>No hay gastos registrados</p>
+          <button class="btn btn-primary btn-sm" @click="openCreate">Registrar primer gasto</button>
+        </div>
+        <div x-show="!loading && items.length>0" class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light"><tr>
+              <th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Tipo</th><th>Monto</th><th>Moneda</th><th></th>
+            </tr></thead>
+            <tbody>
+              <template x-for="g in items" :key="g.id">
+                <tr>
+                  <td x-text="fmtDate(g.fechaGasto)"></td>
+                  <td x-text="g.descripcion ?? '—'"></td>
+                  <td><span class="badge badge-gasto" x-text="g.nombreCategoria"></span></td>
+                  <td x-text="g.tipo"></td>
+                  <td class="fw-semibold text-danger" x-text="fmt(g.monto)"></td>
+                  <td x-text="g.moneda"></td>
+                  <td>
+                    <button class="action-btn text-primary" @click="openEdit(g)" title="Editar"><i class="bi bi-pencil"></i></button>
+                    <button class="action-btn text-danger" @click="remove(g.id)" title="Eliminar"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Gasto -->
+      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" x-text="modal==='create' ? '➕ Nuevo Gasto' : '✏️ Editar Gasto'"></h5>
+              <button class="btn-close" @click="modal=null"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Categoría *</label>
+                  <select class="form-select" x-model="form.categoriaId" required>
+                    <option value="">Seleccionar...</option>
+                    <template x-for="c in categorias" :key="c.id">
+                      <option :value="c.id" x-text="c.nombre"></option>
+                    </template>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Monto *</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" step="0.01" min="0" class="form-control" x-model="form.monto" required />
+                  </div>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Moneda</label>
+                  <select class="form-select" x-model="form.moneda">
+                    <option value="USD">USD</option>
+                    <option value="BTC">BTC (Bitcoin)</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Tipo de gasto</label>
+                  <select class="form-select" x-model="form.tipo">
+                    <option value="1">Servicio Básico</option>
+                    <option value="2">Alimentación</option>
+                    <option value="3">Educación</option>
+                    <option value="4">Salud</option>
+                    <option value="5">Transporte</option>
+                    <option value="6">Entretenimiento</option>
+                    <option value="7">Ahorro</option>
+                    <option value="8">Cuota Tanda</option>
+                    <option value="9">Otro</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Fecha *</label>
+                  <input type="date" class="form-control" x-model="form.fechaGasto" required />
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Descripción</label>
+                  <input type="text" class="form-control" x-model="form.descripcion" placeholder="Opcional" />
+                </div>
+                <div class="col-6">
+                  <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" x-model="form.esRecurrente" id="chkRecGasto" />
+                    <label class="form-check-label" for="chkRecGasto">Es recurrente</label>
+                  </div>
+                </div>
+                <div class="col-6" x-show="form.esRecurrente">
+                  <label class="form-label fw-semibold">Frecuencia</label>
+                  <select class="form-select" x-model="form.frecuencia">
+                    <option value="1">Diaria</option>
+                    <option value="2">Semanal</option>
+                    <option value="3">Mensual</option>
+                    <option value="4">Trimestral</option>
+                    <option value="5">Semestral</option>
+                    <option value="6">Anual</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-light" @click="modal=null">Cancelar</button>
+              <button class="btn btn-primary" @click="save">
+                <i class="bi bi-check-lg me-1"></i>Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+    </div>
+
+    <!-- ══════ INGRESOS PAGE ══════ -->
+    <div class="page-body" x-show="$store.fh.page==='ingresos'"
+         x-data="ingresosPage()">
+
+      <div class="row g-3 mb-3" x-show="resumen">
+        <div class="col-md-4">
+          <div class="stat-card income">
+            <div class="label">Total ingresos del mes</div>
+            <div class="value text-success" x-text="'$' + (resumen?.totalIngresos??0).toLocaleString('es-SV',{minimumFractionDigits:2})"></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="label">Promedio mensual</div>
+            <div class="value" x-text="'$' + (resumen?.promedioMensual??0).toLocaleString('es-SV',{minimumFractionDigits:2})"></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="label">Tipo más frecuente</div>
+            <div class="value fs-5" x-text="resumen?.tipoMasFrecuente ?? '—'"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-success btn-sm" @click="openCreate">
+          <i class="bi bi-plus-lg me-1"></i>Nuevo Ingreso
+        </button>
+      </div>
+
+      <div class="table-card">
+        <div class="card-header-fh">
+          <h6>Lista de Ingresos <span class="badge bg-light text-dark ms-1" x-text="items.length"></span></h6>
+        </div>
+        <div x-show="loading" class="text-center py-4"><div class="spinner-border text-success"></div></div>
+        <div x-show="!loading && items.length===0" class="empty-state">
+          <i class="bi bi-wallet"></i><p>No hay ingresos registrados</p>
+          <button class="btn btn-success btn-sm" @click="openCreate">Registrar primer ingreso</button>
+        </div>
+        <div x-show="!loading && items.length>0" class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light"><tr>
+              <th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Tipo</th><th>Monto</th><th>Moneda</th><th>Recurrente</th><th></th>
+            </tr></thead>
+            <tbody>
+              <template x-for="i in items" :key="i.id">
+                <tr>
+                  <td x-text="fmtDate(i.fechaIngreso)"></td>
+                  <td x-text="i.descripcion ?? '—'"></td>
+                  <td><span class="badge badge-ingreso" x-text="i.nombreCategoria"></span></td>
+                  <td x-text="i.tipo"></td>
+                  <td class="fw-semibold text-success" x-text="fmt(i.monto)"></td>
+                  <td x-text="i.moneda"></td>
+                  <td><i class="bi" :class="i.esRecurrente ? 'bi-check-circle-fill text-success' : 'bi-dash-circle text-muted'"></i></td>
+                  <td>
+                    <button class="action-btn text-primary" @click="openEdit(i)"><i class="bi bi-pencil"></i></button>
+                    <button class="action-btn text-danger" @click="remove(i.id)"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Ingreso -->
+      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" x-text="modal==='create' ? '➕ Nuevo Ingreso' : '✏️ Editar Ingreso'"></h5>
+              <button class="btn-close" @click="modal=null"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Categoría *</label>
+                  <select class="form-select" x-model="form.categoriaId" required>
+                    <option value="">Seleccionar...</option>
+                    <template x-for="c in categorias" :key="c.id">
+                      <option :value="c.id" x-text="c.nombre"></option>
+                    </template>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Monto *</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" step="0.01" min="0" class="form-control" x-model="form.monto" required />
+                  </div>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Moneda</label>
+                  <select class="form-select" x-model="form.moneda">
+                    <option value="USD">USD</option>
+                    <option value="BTC">BTC (Bitcoin)</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Tipo de ingreso</label>
+                  <select class="form-select" x-model="form.tipo">
+                    <option value="1">Salario</option>
+                    <option value="2">Remesa</option>
+                    <option value="3">Negocio</option>
+                    <option value="4">Freelance</option>
+                    <option value="5">Ingreso Informal</option>
+                    <option value="6">Tanda</option>
+                    <option value="7">Otro</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Fecha *</label>
+                  <input type="date" class="form-control" x-model="form.fechaIngreso" required />
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Descripción</label>
+                  <input type="text" class="form-control" x-model="form.descripcion" placeholder="Opcional" />
+                </div>
+                <div class="col-6">
+                  <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" x-model="form.esRecurrente" id="chkRecIng" />
+                    <label class="form-check-label" for="chkRecIng">Es recurrente</label>
+                  </div>
+                </div>
+                <div class="col-6" x-show="form.esRecurrente">
+                  <label class="form-label fw-semibold">Frecuencia</label>
+                  <select class="form-select" x-model="form.frecuencia">
+                    <option value="1">Diaria</option>
+                    <option value="2">Semanal</option>
+                    <option value="3">Mensual</option>
+                    <option value="4">Trimestral</option>
+                    <option value="5">Semestral</option>
+                    <option value="6">Anual</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-light" @click="modal=null">Cancelar</button>
+              <button class="btn btn-success" @click="save"><i class="bi bi-check-lg me-1"></i>Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+    </div>
+
+    <!-- ══════ PRESUPUESTOS PAGE ══════ -->
+    <div class="page-body" x-show="$store.fh.page==='presupuestos'"
+         x-data="presupuestosPage()">
+
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex gap-2 align-items-center">
+          <select class="form-select form-select-sm" style="width:auto" x-model.number="anio" @change="cargar">
+            <template x-for="a in [2024,2025,2026,2027]" :key="a">
+              <option :value="a" x-text="a"></option>
+            </template>
+          </select>
+          <select class="form-select form-select-sm" style="width:auto" x-model.number="mes" @change="cargar">
+            <template x-for="m in [{v:1,l:'Enero'},{v:2,l:'Febrero'},{v:3,l:'Marzo'},{v:4,l:'Abril'},{v:5,l:'Mayo'},{v:6,l:'Junio'},{v:7,l:'Julio'},{v:8,l:'Agosto'},{v:9,l:'Septiembre'},{v:10,l:'Octubre'},{v:11,l:'Noviembre'},{v:12,l:'Diciembre'}]" :key="m.v">
+              <option :value="m.v" x-text="m.l"></option>
+            </template>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" @click="openCreate">
+          <i class="bi bi-plus-lg me-1"></i>Nuevo Presupuesto
+        </button>
+      </div>
+
+      <div x-show="loading" class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+
+      <!-- Comparativo cards -->
+      <div x-show="!loading && comparativo.length>0" class="row g-3 mb-4">
+        <template x-for="p in comparativo" :key="p.categoriaId">
+          <div class="col-md-6 col-lg-4">
+            <div class="section-card">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-semibold small" x-text="p.nombreCategoria"></span>
+                <span class="small fw-bold" :class="p.porcentajeUso>=100?'text-danger':p.porcentajeUso>=80?'text-warning':'text-success'"
+                      x-text="p.porcentajeUso.toFixed(0)+'%'"></span>
+              </div>
+              <div class="budget-bar mb-2">
+                <div class="fill" :class="'fill '+ (p.porcentajeUso>=100?'danger':p.porcentajeUso>=80?'warning':'safe')"
+                     :style="'width:'+Math.min(p.porcentajeUso,100)+'%'"></div>
+              </div>
+              <div class="d-flex justify-content-between small text-muted">
+                <span>Gastado: <b class="text-dark" x-text="'$'+p.montoGastado.toLocaleString('es-SV',{minimumFractionDigits:2})"></b></span>
+                <span>Límite: <b class="text-dark" x-text="'$'+p.montoLimite.toLocaleString('es-SV',{minimumFractionDigits:2})"></b></span>
+              </div>
+              <div class="text-end mt-1 small" :class="p.disponible>=0?'text-success':'text-danger'"
+                   x-text="(p.disponible>=0?'Disponible: ':'Exceso: ')+'$'+Math.abs(p.disponible).toLocaleString('es-SV',{minimumFractionDigits:2})"></div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="!loading && items.length===0" class="empty-state">
+        <i class="bi bi-bar-chart"></i><p>No hay presupuestos para este período</p>
+        <button class="btn btn-primary btn-sm" @click="openCreate">Crear primer presupuesto</button>
+      </div>
+
+      <!-- Tabla presupuestos -->
+      <div x-show="!loading && items.length>0" class="table-card">
+        <div class="card-header-fh"><h6>Presupuestos activos</h6></div>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light"><tr>
+              <th>Categoría</th><th>Límite</th><th>Gastado</th><th>% Uso</th><th></th>
+            </tr></thead>
+            <tbody>
+              <template x-for="p in items" :key="p.id">
+                <tr>
+                  <td x-text="p.nombreCategoria"></td>
+                  <td x-text="fmt(p.montoLimite)"></td>
+                  <td x-text="fmt(p.montoGastado)"></td>
+                  <td>
+                    <span class="badge" :class="p.porcentajeUso>=100?'bg-danger':p.porcentajeUso>=80?'bg-warning text-dark':'bg-success'"
+                          x-text="p.porcentajeUso.toFixed(0)+'%'"></span>
+                  </td>
+                  <td>
+                    <button class="action-btn text-primary" @click="openEdit(p)"><i class="bi bi-pencil"></i></button>
+                    <button class="action-btn text-danger" @click="remove(p.id)"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Presupuesto -->
+      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" x-text="modal==='create' ? '➕ Nuevo Presupuesto' : '✏️ Editar Presupuesto'"></h5>
+              <button class="btn-close" @click="modal=null"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-12" x-show="modal==='create'">
+                  <label class="form-label fw-semibold">Categoría *</label>
+                  <select class="form-select" x-model="form.categoriaId">
+                    <option value="">Seleccionar...</option>
+                    <template x-for="c in categorias" :key="c.id">
+                      <option :value="c.id" x-text="c.nombre"></option>
+                    </template>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Monto límite *</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" step="0.01" min="0" class="form-control" x-model="form.montoLimite" required />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-light" @click="modal=null">Cancelar</button>
+              <button class="btn btn-primary" @click="save"><i class="bi bi-check-lg me-1"></i>Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+    </div>
+
+    <!-- ══════ ALERTAS PAGE ══════ -->
+    <div class="page-body" x-show="$store.fh.page==='alertas'"
+         x-data="alertasPage()">
+
+      <div x-show="loading" class="text-center py-4"><div class="spinner-border text-warning"></div></div>
+
+      <div x-show="!loading && items.length===0" class="empty-state">
+        <i class="bi bi-bell-slash"></i><p>Sin alertas</p>
+      </div>
+
+      <div x-show="!loading" class="row g-3">
+        <template x-for="a in items" :key="a.id">
+          <div class="col-12">
+            <div class="section-card d-flex align-items-start gap-3"
+                 :class="a.estado==='Leida' ? 'opacity-75' : ''">
+              <div class="flex-shrink-0 mt-1">
+                <i class="bi fs-4" :class="iconoTipo(a.tipo)"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="mb-1 fw-bold" x-text="a.titulo"></h6>
+                    <p class="mb-1 small text-muted" x-text="a.mensaje"></p>
+                  </div>
+                  <div class="flex-shrink-0 ms-3 text-end">
+                    <span class="badge" :class="a.estado==='Leida' ? 'badge-leida' : 'badge-gasto'" x-text="a.estado"></span>
+                    <div class="small text-muted mt-1" x-text="fmtDate(a.fechaGenerada)"></div>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-2" x-show="a.estado!=='Leida'">
+                  <button class="btn btn-sm btn-outline-success" @click="marcarLeida(a.id)">
+                    <i class="bi bi-check me-1"></i>Marcar leída
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" @click="remove(a.id)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- ══════ SERVICIOS BÁSICOS PAGE ══════ -->
+    <div class="page-body" x-show="$store.fh.page==='servicios'"
+         x-data="serviciosPage()">
+
+      <!-- Próximos vencimientos -->
+      <template x-if="proximos.length>0">
+        <div class="alert alert-warning d-flex align-items-center gap-2 mb-3">
+          <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+          <div>
+            <strong>Próximos a vencer:</strong>
+            <span x-text="proximos.map(s=>s.nombreProveedor+' ('+fmtDate(s.fechaVencimiento)+')').join(', ')"></span>
+          </div>
+        </div>
+      </template>
+
+      <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-primary btn-sm" @click="openCreate">
+          <i class="bi bi-plus-lg me-1"></i>Agregar Servicio
+        </button>
+      </div>
+
+      <div x-show="loading" class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+      <div x-show="!loading && items.length===0" class="empty-state">
+        <i class="bi bi-lightning-charge"></i><p>No hay servicios básicos registrados</p>
+        <button class="btn btn-primary btn-sm" @click="openCreate">Agregar servicio</button>
+      </div>
+
+      <div x-show="!loading" class="row g-3">
+        <template x-for="s in items" :key="s.id">
+          <div class="col-md-6 col-lg-4">
+            <div class="section-card">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h6 class="mb-0 fw-bold" x-text="s.nombreProveedor"></h6>
+                  <span class="badge badge-activa small" x-text="tipoLabel(s.tipoServicio)"></span>
+                </div>
+                <span class="badge" :class="s.estaPagado ? 'badge-pagado' : 'badge-pendiente'"
+                      x-text="s.estaPagado ? 'Pagado' : 'Pendiente'"></span>
+              </div>
+              <div class="d-flex justify-content-between small text-muted mt-2">
+                <span>Monto prom.</span>
+                <strong class="text-dark" x-text="fmt(s.montoPromedio)"></strong>
+              </div>
+              <div class="d-flex justify-content-between small text-muted mt-1">
+                <span>Vencimiento</span>
+                <strong class="text-dark" x-text="fmtDate(s.fechaVencimiento)"></strong>
+              </div>
+              <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-sm btn-outline-primary flex-fill" @click="openEdit(s)">
+                  <i class="bi bi-pencil me-1"></i>Editar
+                </button>
+                <button class="btn btn-sm btn-outline-danger" @click="remove(s.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Modal Servicio -->
+      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" x-text="modal==='create' ? '➕ Nuevo Servicio' : '✏️ Editar Servicio'"></h5>
+              <button class="btn-close" @click="modal=null"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-12" x-show="modal==='create'">
+                  <label class="form-label fw-semibold">Tipo de servicio</label>
+                  <select class="form-select" x-model.number="form.tipoServicio">
+                    <template x-for="t in TIPOS" :key="t.v">
+                      <option :value="t.v" x-text="t.l"></option>
+                    </template>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Proveedor *</label>
+                  <input type="text" class="form-control" x-model="form.nombreProveedor" placeholder="Ej: CAESS, ANDA, Claro..." required />
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Monto promedio *</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" step="0.01" min="0" class="form-control" x-model="form.montoPromedio" required />
+                  </div>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Vencimiento *</label>
+                  <input type="date" class="form-control" x-model="form.fechaVencimiento" required />
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Días de anticipación para alerta</label>
+                  <input type="number" min="1" max="30" class="form-control" x-model.number="form.diasAnticipacionNotificacion" />
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-light" @click="modal=null">Cancelar</button>
+              <button class="btn btn-primary" @click="save"><i class="bi bi-check-lg me-1"></i>Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+    </div>
+
+    <!-- ══════ TANDAS PAGE ══════ -->
+    <div class="page-body" x-show="$store.fh.page==='tandas'"
+         x-data="tandasPage()">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <p class="text-muted small mb-0">Las tandas son una tradición salvadoreña de ahorro rotativo grupal.</p>
+        <button class="btn btn-primary btn-sm" @click="openCreate">
+          <i class="bi bi-plus-lg me-1"></i>Nueva Tanda
+        </button>
+      </div>
+
+      <div x-show="loading" class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+      <div x-show="!loading && items.length===0" class="empty-state">
+        <i class="bi bi-people"></i><p>No hay tandas registradas</p>
+        <button class="btn btn-primary btn-sm" @click="openCreate">Crear tanda</button>
+      </div>
+
+      <div x-show="!loading" class="row g-3">
+        <template x-for="t in items" :key="t.id">
+          <div class="col-md-6">
+            <div class="section-card">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                  <h6 class="mb-1 fw-bold" x-text="t.nombre"></h6>
+                  <span class="badge badge-activa me-1">
+                    <i class="bi bi-people me-1"></i>
+                    <span x-text="t.totalParticipantes"></span> participantes
+                  </span>
+                  <span class="badge" :class="estadoClass(t.estado)" x-text="t.estado"></span>
+                </div>
+                <div class="text-end">
+                  <div class="fw-bold text-success" x-text="fmt(t.cuotaMensual)"></div>
+                  <div class="small text-muted">/mes por persona</div>
+                </div>
+              </div>
+
+              <!-- Participantes -->
+              <div class="mb-3" x-show="t.participantes?.length">
+                <p class="small text-muted fw-semibold mb-1">Participantes</p>
+                <div class="d-flex flex-wrap gap-1">
+                  <template x-for="p in t.participantes" :key="p.usuarioId">
+                    <span class="badge bg-light text-dark border small">
+                      #<span x-text="p.numeroTurno"></span> <span x-text="p.nombreUsuario.split(' ')[0]"></span>
+                      <i class="bi ms-1" :class="p.cuotaPagadaMes ? 'bi-check-circle-fill text-success' : 'bi-clock text-warning'"></i>
+                    </span>
+                  </template>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center text-muted small mb-3">
+                <span>Turno actual: <strong class="text-dark" x-text="t.turnoActual"></strong></span>
+                <span>Inicio: <strong class="text-dark" x-text="fmtDate(t.fechaInicio)"></strong></span>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-primary flex-fill" @click="openEdit(t)">
+                  <i class="bi bi-pencil me-1"></i>Editar
+                </button>
+                <button class="btn btn-sm btn-outline-danger" @click="remove(t.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Modal Tanda -->
+      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" x-text="modal==='create' ? '🤝 Nueva Tanda' : '✏️ Editar Tanda'"></h5>
+              <button class="btn-close" @click="modal=null"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Nombre de la tanda *</label>
+                  <input type="text" class="form-control" x-model="form.nombre" placeholder="Ej: Tanda del trabajo" required />
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Cuota mensual *</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" step="0.01" min="0" class="form-control" x-model="form.cuotaMensual" required />
+                  </div>
+                </div>
+                <div class="col-6" x-show="modal==='create'">
+                  <label class="form-label fw-semibold">N° participantes</label>
+                  <input type="number" min="2" max="20" class="form-control" x-model.number="form.totalParticipantes" />
+                </div>
+                <div class="col-12" x-show="modal==='create'">
+                  <label class="form-label fw-semibold">Fecha de inicio</label>
+                  <input type="date" class="form-control" x-model="form.fechaInicio" />
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-light" @click="modal=null">Cancelar</button>
+              <button class="btn btn-primary" @click="save"><i class="bi bi-check-lg me-1"></i>Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+    </div>
+
+    <!-- ══════ REMESAS PAGE ══════ -->
+    <div class="page-body" x-show="$store.fh.page==='remesas'"
+         x-data="remesasPage()">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <p class="text-muted small mb-0">Las remesas son el mayor flujo de ingreso familiar en El Salvador.</p>
+        <button class="btn btn-primary btn-sm" @click="openCreate">
+          <i class="bi bi-plus-lg me-1"></i>Registrar Remesa
+        </button>
+      </div>
+
+      <div x-show="loading" class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+      <div x-show="!loading && items.length===0" class="empty-state">
+        <i class="bi bi-send"></i><p>No hay remesas registradas</p>
+        <button class="btn btn-primary btn-sm" @click="openCreate">Registrar remesa</button>
+      </div>
+
+      <div x-show="!loading && items.length>0" class="table-card">
+        <div class="card-header-fh"><h6>Historial de Remesas <span class="badge bg-light text-dark ms-1" x-text="items.length"></span></h6></div>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light"><tr>
+              <th>Fecha</th><th>País origen</th><th>Empresa</th><th>Confirmación</th><th>Monto</th><th>Moneda</th><th></th>
+            </tr></thead>
+            <tbody>
+              <template x-for="r in items" :key="r.id">
+                <tr>
+                  <td x-text="fmtDate(r.fechaRecepcion)"></td>
+                  <td><span class="badge badge-ingreso" x-text="r.paisOrigen"></span></td>
+                  <td x-text="r.empresa"></td>
+                  <td><code x-text="r.numeroConfirmacion ?? '—'"></code></td>
+                  <td class="fw-semibold text-success" x-text="fmt(r.monto)"></td>
+                  <td x-text="r.moneda"></td>
+                  <td>
+                    <button class="action-btn text-primary" @click="openEdit(r)"><i class="bi bi-pencil"></i></button>
+                    <button class="action-btn text-danger" @click="remove(r.id)"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Remesa -->
+      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" x-text="modal==='create' ? '✈️ Nueva Remesa' : '✏️ Editar Remesa'"></h5>
+              <button class="btn-close" @click="modal=null"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-12" x-show="modal==='create'">
+                  <label class="form-label fw-semibold">Categoría *</label>
+                  <select class="form-select" x-model="form.categoriaId">
+                    <option value="">Seleccionar...</option>
+                    <template x-for="c in categorias" :key="c.id">
+                      <option :value="c.id" x-text="c.nombre"></option>
+                    </template>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Monto *</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" step="0.01" min="0" class="form-control" x-model="form.monto" required />
+                  </div>
+                </div>
+                <div class="col-6" x-show="modal==='create'">
+                  <label class="form-label fw-semibold">Moneda</label>
+                  <select class="form-select" x-model="form.moneda">
+                    <option value="USD">USD</option>
+                    <option value="BTC">BTC</option>
+                  </select>
+                </div>
+                <div class="col-6" x-show="modal==='create'">
+                  <label class="form-label fw-semibold">País de origen</label>
+                  <input type="text" class="form-control" x-model="form.paisOrigen" placeholder="Estados Unidos" />
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Empresa *</label>
+                  <input type="text" class="form-control" x-model="form.empresa" placeholder="Western Union, Remitly..." required />
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">N° Confirmación</label>
+                  <input type="text" class="form-control" x-model="form.numeroConfirmacion" placeholder="ABC12345" />
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold">Fecha de recepción *</label>
+                  <input type="date" class="form-control" x-model="form.fechaRecepcion" required />
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-light" @click="modal=null">Cancelar</button>
+              <button class="btn btn-primary" @click="save"><i class="bi bi-check-lg me-1"></i>Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app -->
+
+<!-- ── Toast notifications ─────────────────────────────── -->
+<div class="toast-container" x-data>
+  <div x-show="$store.fh.toast" x-transition
+       class="toast show align-items-center border-0 text-white"
+       :class="$store.fh.toast?.type==='danger' ? 'bg-danger' : 'bg-success'"
+       style="min-width:260px">
+    <div class="d-flex">
+      <div class="toast-body fw-semibold" x-text="$store.fh.toast?.msg"></div>
+      <button class="btn-close btn-close-white me-2 m-auto" @click="$store.fh.toast=null"></button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /root -->
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="/js/api.js?v=3"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+<script src="/js/main.js?v=3"></script>
+</body>
+</html>
