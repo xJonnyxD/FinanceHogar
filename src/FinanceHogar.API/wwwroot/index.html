@@ -358,7 +358,7 @@
       </div>
 
       <!-- Modal Gasto -->
-      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+      <div class="modal" :class="{show:modal}" @click.self="modal=null" :style="modal?'display:block;z-index:1055':'display:none;z-index:1055'">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
@@ -440,7 +440,7 @@
           </div>
         </div>
       </div>
-      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+      <div class="modal-backdrop show" :style="modal?'display:block;z-index:1040':'display:none;z-index:1040'"></div>
     </div>
 
     <!-- ══════ INGRESOS PAGE ══════ -->
@@ -510,7 +510,7 @@
       </div>
 
       <!-- Modal Ingreso -->
-      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+      <div class="modal" :class="{show:modal}" @click.self="modal=null" :style="modal?'display:block;z-index:1055':'display:none;z-index:1055'">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
@@ -588,7 +588,7 @@
           </div>
         </div>
       </div>
-      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+      <div class="modal-backdrop show" :style="modal?'display:block;z-index:1040':'display:none;z-index:1040'"></div>
     </div>
 
     <!-- ══════ PRESUPUESTOS PAGE ══════ -->
@@ -675,7 +675,7 @@
       </div>
 
       <!-- Modal Presupuesto -->
-      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+      <div class="modal" :class="{show:modal}" @click.self="modal=null" :style="modal?'display:block;z-index:1055':'display:none;z-index:1055'">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
@@ -709,7 +709,7 @@
           </div>
         </div>
       </div>
-      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+      <div class="modal-backdrop show" :style="modal?'display:block;z-index:1040':'display:none;z-index:1040'"></div>
     </div>
 
     <!-- ══════ ALERTAS PAGE ══════ -->
@@ -817,7 +817,7 @@
       </div>
 
       <!-- Modal Servicio -->
-      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+      <div class="modal" :class="{show:modal}" @click.self="modal=null" :style="modal?'display:block;z-index:1055':'display:none;z-index:1055'">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
@@ -862,7 +862,7 @@
           </div>
         </div>
       </div>
-      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+      <div class="modal-backdrop show" :style="modal?'display:block;z-index:1040':'display:none;z-index:1040'"></div>
     </div>
 
     <!-- ══════ TANDAS PAGE ══════ -->
@@ -933,7 +933,7 @@
       </div>
 
       <!-- Modal Tanda -->
-      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+      <div class="modal" :class="{show:modal}" @click.self="modal=null" :style="modal?'display:block;z-index:1055':'display:none;z-index:1055'">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
@@ -970,7 +970,7 @@
           </div>
         </div>
       </div>
-      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+      <div class="modal-backdrop show" :style="modal?'display:block;z-index:1040':'display:none;z-index:1040'"></div>
     </div>
 
     <!-- ══════ REMESAS PAGE ══════ -->
@@ -1018,7 +1018,7 @@
       </div>
 
       <!-- Modal Remesa -->
-      <div class="modal fade" :class="{show:modal}" :style="modal?'display:block':''" @click.self="modal=null" x-show="modal">
+      <div class="modal" :class="{show:modal}" @click.self="modal=null" :style="modal?'display:block;z-index:1055':'display:none;z-index:1055'">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
@@ -1075,7 +1075,7 @@
           </div>
         </div>
       </div>
-      <div class="modal-backdrop fade show" x-show="modal" style="z-index:1040"></div>
+      <div class="modal-backdrop show" :style="modal?'display:block;z-index:1040':'display:none;z-index:1040'"></div>
     </div>
 
   </div><!-- /main-content -->
