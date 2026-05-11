@@ -42,6 +42,10 @@ desktop.ini
 node_modules/
 package.json
 package-lock.json
-*.html
+
+## Archivos generados / defensa (no son parte del código)
 *.docx
 generar_documento.js
+generador.html
+*_Defensa*
+*_DEFENSA*
