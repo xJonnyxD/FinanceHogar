@@ -1,0 +1,171 @@
+/* ─── Variables ─────────────────────────── */
+:root {
+  --sidebar-w: 240px;
+  --topbar-h: 56px;
+  --primary: #1a3c5e;
+  --primary-light: #2a5298;
+}
+
+/* ─── Layout ─────────────────────────────── */
+.fh-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.fh-sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.fh-main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f4f6fa;
+  min-height: 100vh;
+}
+
+.fh-topbar {
+  height: var(--topbar-h);
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 1.5rem;
+}
+
+.fh-content {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+/* ─── Sidebar ────────────────────────────── */
+.fh-brand {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1.25rem 1rem;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,.15);
+}
+
+.fh-brand i { font-size: 1.6rem; }
+.fh-brand .fw-bold { font-size: 1rem; }
+
+.fh-nav {
+  padding: .5rem 0;
+  flex: 1;
+}
+
+.fh-nav-link {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .65rem 1rem;
+  color: rgba(255,255,255,.8);
+  text-decoration: none;
+  font-size: .9rem;
+  border-radius: .4rem;
+  margin: .1rem .5rem;
+  transition: background .2s, color .2s;
+}
+
+.fh-nav-link:hover,
+.fh-nav-link.active {
+  background: rgba(255,255,255,.18);
+  color: #fff;
+}
+
+.fh-nav-link i { font-size: 1rem; width: 1.2rem; }
+
+.fh-sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(255,255,255,.15);
+}
+
+.fh-avatar {
+  width: 34px; height: 34px;
+  background: rgba(255,255,255,.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.fh-logout-btn {
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.2);
+}
+.fh-logout-btn:hover { background: rgba(255,255,255,.22); color: #fff; }
+
+/* ─── Stat Cards ─────────────────────────── */
+.fh-stat-card {
+  background: #fff;
+  border-radius: .75rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.07);
+  border-left: 4px solid transparent;
+}
+.fh-stat-green  { border-color: #00a878; }
+.fh-stat-red    { border-color: #e63946; }
+.fh-stat-blue   { border-color: #2a5298; }
+.fh-stat-yellow { border-color: #f4a261; }
+.fh-stat-label  { font-size: .78rem; color: #6c757d; text-transform: uppercase; letter-spacing: .04em; }
+.fh-stat-value  { font-size: 1.6rem; font-weight: 700; color: #1a3c5e; line-height: 1.1; margin: .25rem 0; }
+.fh-stat-sub    { font-size: .75rem; color: #adb5bd; }
+
+/* ─── Auth ───────────────────────────────── */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a3c5e 0%, #2a5298 100%);
+  padding: 1rem;
+}
+
+.auth-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+}
+
+/* ─── General ────────────────────────────── */
+body { font-family: 'Segoe UI', system-ui, sans-serif; }
+
+.card { border-radius: .75rem; }
+
+#blazor-error-ui {
+  color-scheme: light only;
+  background: lightyellow;
+  bottom: 0;
+  box-shadow: 0 -1px 2px rgba(0,0,0,.2);
+  box-sizing: border-box;
+  display: none;
+  left: 0;
+  padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+}
+
+@media (max-width: 767px) {
+  .fh-sidebar { width: 100%; min-height: auto; position: static; }
+  .fh-main { margin-left: 0; }
+  .fh-layout { flex-direction: column; }
+}

@@ -1,0 +1,27 @@
+@inherits LayoutComponentBase
+@inject AuthService AuthSvc
+@inject NavigationManager Nav
+@inject ApiService Api
+
+<AuthorizeView>
+    <Authorized>
+        <div class="fh-layout">
+            <NavMenu />
+            <div class="fh-main">
+                <div class="fh-topbar">
+                    <span class="text-muted small">
+                        <i class="bi bi-calendar3 me-1"></i>
+                        @DateTime.Now.ToString("dddd, dd MMMM yyyy", new System.Globalization.CultureInfo("es-SV"))
+                    </span>
+                </div>
+                <div class="fh-content">
+                    @Body
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        @Body
+    </NotAuthorized>
+</AuthorizeView>
+<Toast />

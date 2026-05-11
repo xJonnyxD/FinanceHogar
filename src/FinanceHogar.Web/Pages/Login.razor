@@ -1,0 +1,127 @@
+@page "/login"
+@layout EmptyLayout
+@inject AuthService AuthSvc
+@inject NavigationManager Nav
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="text-center mb-4">
+            <i class="bi bi-house-heart-fill text-primary" style="font-size:3rem"></i>
+            <h4 class="mt-2 fw-bold">FinanceHogar</h4>
+            <p class="text-muted small">Control financiero para familias salvadoreñas</p>
+        </div>
+
+        <ul class="nav nav-pills nav-fill mb-4">
+            <li class="nav-item">
+                <button class="nav-link w-100 @(_tab=="login"?"active":"")" @onclick='()=>_tab="login"'>Iniciar sesión</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link w-100 @(_tab=="register"?"active":"")" @onclick='()=>_tab="register"'>Registrarse</button>
+            </li>
+        </ul>
+
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div class="alert alert-danger py-2 small">@_error</div>
+        }
+
+        @if (_tab == "login")
+        {
+            <div class="mb-3">
+                <p class="text-muted small text-center mb-2">Acceso rápido (demo)</p>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm flex-fill"
+                            @onclick='()=>{_email="admin@financehogar.com";_pass="Admin1234!";}'>
+                        <i class="bi bi-shield-lock me-1"></i>Admin
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm flex-fill"
+                            @onclick='()=>{_email="usuario@financehogar.com";_pass="User1234!";}'>
+                        <i class="bi bi-person me-1"></i>Usuario
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Correo electrónico</label>
+                <input class="form-control" type="email" @bind="_email" placeholder="correo@ejemplo.com" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Contraseña</label>
+                <input class="form-control" type="password" @bind="_pass" placeholder="••••••••" />
+            </div>
+            <button class="btn btn-primary w-100 py-2" @onclick="DoLogin" disabled="@_loading">
+                @if (_loading) { <span class="spinner-border spinner-border-sm me-2"></span> }
+                Iniciar sesión
+            </button>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Nombre completo *</label>
+                <input class="form-control" @bind="_regNombre" placeholder="Juan Pérez García" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Correo electrónico *</label>
+                <input class="form-control" type="email" @bind="_regEmail" placeholder="correo@ejemplo.com" />
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label fw-semibold">Contraseña *</label>
+                    <input class="form-control" type="password" @bind="_regPass" placeholder="Mínimo 6 caracteres" />
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-semibold">Teléfono</label>
+                    <input class="form-control" @bind="_regTel" placeholder="7000-0000" />
+                </div>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label fw-semibold">DUI</label>
+                    <input class="form-control" @bind="_regDui" placeholder="00000000-0" />
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-semibold">Nombre del hogar *</label>
+                    <input class="form-control" @bind="_regHogar" placeholder="Familia García" />
+                </div>
+            </div>
+            <button class="btn btn-success w-100 py-2" @onclick="DoRegister" disabled="@_loading">
+                @if (_loading) { <span class="spinner-border spinner-border-sm me-2"></span> }
+                Crear cuenta
+            </button>
+        }
+        <p class="text-center text-muted small mt-4 mb-0">🇸🇻 Hecho para El Salvador — USD &amp; Bitcoin</p>
+    </div>
+</div>
+
+@code {
+    string _tab = "login", _email = "", _pass = "", _error = "";
+    string _regNombre = "", _regEmail = "", _regPass = "", _regTel = "", _regDui = "", _regHogar = "";
+    bool _loading;
+
+    async Task DoLogin()
+    {
+        if (string.IsNullOrWhiteSpace(_email) || string.IsNullOrWhiteSpace(_pass))
+        { _error = "Correo y contraseña son requeridos"; return; }
+        _loading = true; _error = "";
+        var (ok, err) = await AuthSvc.LoginAsync(_email, _pass);
+        _loading = false;
+        if (ok) Nav.NavigateTo("/", forceLoad: false);
+        else _error = err ?? "Error de autenticación";
+    }
+
+    async Task DoRegister()
+    {
+        if (string.IsNullOrWhiteSpace(_regNombre) || string.IsNullOrWhiteSpace(_regEmail) ||
+            string.IsNullOrWhiteSpace(_regPass) || string.IsNullOrWhiteSpace(_regHogar))
+        { _error = "Los campos marcados con * son requeridos"; return; }
+        _loading = true; _error = "";
+        var req = new RegisterRequest(_regNombre, _regEmail, _regPass,
+            string.IsNullOrWhiteSpace(_regTel) ? null : _regTel,
+            string.IsNullOrWhiteSpace(_regDui) ? null : _regDui,
+            _regHogar);
+        var (ok, err) = await AuthSvc.RegisterAsync(req);
+        _loading = false;
+        if (ok) Nav.NavigateTo("/", forceLoad: false);
+        else _error = err ?? "Error en el registro";
+    }
+}

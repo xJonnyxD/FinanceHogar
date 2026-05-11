@@ -1,0 +1,82 @@
+@inject AuthService AuthSvc
+@inject NavigationManager Nav
+@inject ApiService Api
+@implements IDisposable
+
+<aside class="fh-sidebar">
+    <div class="fh-brand">
+        <i class="bi bi-house-heart-fill me-2"></i>
+        <div>
+            <div class="fw-bold">FinanceHogar</div>
+            <small class="opacity-75">@_hogarNombre</small>
+        </div>
+    </div>
+
+    <nav class="fh-nav">
+        <NavLink href="/" Match="NavLinkMatch.All" class="fh-nav-link">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </NavLink>
+        <NavLink href="/gastos" class="fh-nav-link">
+            <i class="bi bi-arrow-up-circle"></i> Gastos
+        </NavLink>
+        <NavLink href="/ingresos" class="fh-nav-link">
+            <i class="bi bi-arrow-down-circle"></i> Ingresos
+        </NavLink>
+        <NavLink href="/presupuestos" class="fh-nav-link">
+            <i class="bi bi-bar-chart-line"></i> Presupuestos
+        </NavLink>
+        <NavLink href="/alertas" class="fh-nav-link">
+            <i class="bi bi-bell"></i> Alertas
+        </NavLink>
+        <NavLink href="/servicios" class="fh-nav-link">
+            <i class="bi bi-lightning-charge"></i> Servicios Básicos
+        </NavLink>
+        <NavLink href="/tandas" class="fh-nav-link">
+            <i class="bi bi-people"></i> Tandas
+        </NavLink>
+        <NavLink href="/remesas" class="fh-nav-link">
+            <i class="bi bi-send"></i> Remesas
+        </NavLink>
+    </nav>
+
+    <div class="fh-sidebar-footer">
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <div class="fh-avatar"><i class="bi bi-person-fill"></i></div>
+            <div class="overflow-hidden">
+                <div class="text-white small fw-semibold text-truncate">@_nombre</div>
+                <div class="text-white-50" style="font-size:.72rem">@_email</div>
+            </div>
+        </div>
+        <button class="btn btn-sm w-100 fh-logout-btn" @onclick="Logout">
+            <i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión
+        </button>
+    </div>
+</aside>
+
+@code {
+    string _nombre = "", _email = "", _hogarNombre = "Mi Hogar";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var session = await AuthSvc.GetSessionAsync();
+        if (session is not null)
+        {
+            _nombre = session.NombreCompleto;
+            _email = session.Email;
+            try
+            {
+                var hogar = await Api.GetHogarAsync(session.HogarId);
+                _hogarNombre = hogar?.Nombre ?? "Mi Hogar";
+            }
+            catch { }
+        }
+    }
+
+    async Task Logout()
+    {
+        await AuthSvc.LogoutAsync();
+        Nav.NavigateTo("/login", forceLoad: true);
+    }
+
+    public void Dispose() { }
+}

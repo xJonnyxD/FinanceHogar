@@ -4,5 +4,6 @@
     <Project Path="src/FinanceHogar.Application/FinanceHogar.Application.csproj" />
     <Project Path="src/FinanceHogar.Domain/FinanceHogar.Domain.csproj" />
     <Project Path="src/FinanceHogar.Infrastructure/FinanceHogar.Infrastructure.csproj" />
+    <Project Path="src/FinanceHogar.Web/FinanceHogar.Web.csproj" />
   </Folder>
 </Solution>

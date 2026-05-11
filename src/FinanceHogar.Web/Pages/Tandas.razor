@@ -1,0 +1,116 @@
+@page "/tandas"
+@attribute [Authorize]
+@inject ApiService Api
+@inject AuthService AuthSvc
+@inject ToastService Toast
+
+<PageTitle>Tandas — FinanceHogar</PageTitle>
+<PageHeader Title="Tandas" Icon="bi-people" ButtonLabel="Nueva Tanda" OnButtonClick="OpenCreate" />
+
+@if (_loading)
+{ <div class="text-center py-4"><div class="spinner-border text-primary"></div></div> }
+else if (!_items.Any())
+{ <EmptyState Icon="bi-people" Message="No hay tandas registradas" ButtonLabel="Crear tanda" OnButtonClick="OpenCreate" /> }
+else
+{
+    <div class="row g-3">
+        @foreach (var t in _items)
+        {
+            <div class="col-md-6 col-xl-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h6 class="fw-bold mb-0">@t.Nombre</h6>
+                            <span class="badge @EstadoBadge(t.Estado)">@t.Estado</span>
+                        </div>
+                        <p class="text-muted small mb-1">Cuota mensual: <strong>@Fmt(t.CuotaMensual)</strong></p>
+                        <p class="text-muted small mb-1">Participantes: @t.TotalParticipantes</p>
+                        <p class="text-muted small mb-0">Inicio: @t.FechaInicio.ToString("dd/MM/yyyy")</p>
+                    </div>
+                    <div class="card-footer bg-transparent d-flex justify-content-end">
+                        <button class="btn btn-sm btn-outline-danger" @onclick="()=>Remove(t.Id)">
+                            <i class="bi bi-trash me-1"></i>Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<ModalWrapper Visible="_showModal" Title="➕ Nueva Tanda" OnClose="()=>_showModal=false" OnSave="Save" Saving="_saving">
+    <div class="row g-3">
+        <div class="col-12">
+            <label class="form-label fw-semibold">Nombre *</label>
+            <input class="form-control" @bind="_form.Nombre" placeholder="Ej: Tanda del trabajo" />
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">Cuota mensual *</label>
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input class="form-control" type="number" step="any" min="0" @bind="_form.CuotaMensual" />
+            </div>
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">Participantes</label>
+            <input class="form-control" type="number" min="2" max="20" @bind="_form.TotalParticipantes" />
+        </div>
+        <div class="col-12">
+            <label class="form-label fw-semibold">Fecha de inicio</label>
+            <input class="form-control" type="date" @bind="_form.FechaInicio" />
+        </div>
+    </div>
+</ModalWrapper>
+
+@code {
+    bool _loading = true, _showModal, _saving;
+    List<TandaDto> _items = [];
+    CreateTandaRequest _form = new();
+    Guid _hogarId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var s = await AuthSvc.GetSessionAsync();
+        if (s is null) return;
+        _hogarId = s.HogarId;
+        await Load();
+    }
+
+    async Task Load()
+    {
+        _loading = true;
+        try { _items = await Api.GetTandasAsync(_hogarId) ?? []; }
+        catch (Exception e) { Toast.Error(e.Message); }
+        finally { _loading = false; }
+    }
+
+    void OpenCreate()
+    {
+        _form = new CreateTandaRequest { HogarId = _hogarId, FechaInicio = DateOnly.FromDateTime(DateTime.Today) };
+        _showModal = true;
+    }
+
+    async Task Save()
+    {
+        if (string.IsNullOrWhiteSpace(_form.Nombre)) { Toast.Error("El nombre es requerido"); return; }
+        if (_form.CuotaMensual <= 0) { Toast.Error("Ingresa una cuota mensual válida"); return; }
+        _saving = true;
+        try { await Api.CreateTandaAsync(_form); Toast.Success("Tanda creada ✓"); _showModal = false; await Load(); }
+        catch (Exception e) { Toast.Error(e.Message); }
+        finally { _saving = false; }
+    }
+
+    async Task Remove(Guid id)
+    {
+        try { await Api.DeleteTandaAsync(id); Toast.Success("Tanda eliminada"); await Load(); }
+        catch (Exception e) { Toast.Error(e.Message); }
+    }
+
+    string EstadoBadge(string estado) => estado switch
+    {
+        "Activa" => "bg-success text-white",
+        "Completada" => "bg-primary text-white",
+        _ => "bg-secondary text-white"
+    };
+    string Fmt(decimal v) => "$" + v.ToString("N2");
+}

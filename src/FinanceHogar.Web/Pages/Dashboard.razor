@@ -1,0 +1,112 @@
+@page "/"
+@attribute [Authorize]
+@inject ApiService Api
+@inject AuthService AuthSvc
+
+<PageTitle>Dashboard — FinanceHogar</PageTitle>
+
+@if (_loading)
+{
+    <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+}
+else
+{
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="fh-stat-card fh-stat-green">
+                <div class="fh-stat-label"><i class="bi bi-arrow-down-circle me-1"></i>Ingresos del Mes</div>
+                <div class="fh-stat-value">@Fmt(_balance?.TotalIngresos ?? 0)</div>
+                <div class="fh-stat-sub">@MesActual()</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="fh-stat-card fh-stat-red">
+                <div class="fh-stat-label"><i class="bi bi-arrow-up-circle me-1"></i>Gastos del Mes</div>
+                <div class="fh-stat-value">@Fmt(_balance?.TotalGastos ?? 0)</div>
+                <div class="fh-stat-sub">@MesActual()</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="fh-stat-card fh-stat-blue">
+                <div class="fh-stat-label"><i class="bi bi-wallet2 me-1"></i>Balance</div>
+                <div class="fh-stat-value @((_balance?.Balance ?? 0) >= 0 ? "text-success" : "text-danger")">
+                    @Fmt(_balance?.Balance ?? 0)
+                </div>
+                <div class="fh-stat-sub">Ingresos − Gastos</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="fh-stat-card fh-stat-yellow">
+                <div class="fh-stat-label"><i class="bi bi-star me-1"></i>Puntaje Financiero</div>
+                <div class="fh-stat-value">@(_puntaje?.Puntaje ?? 0)<span class="fs-6">/100</span></div>
+                <div class="fh-stat-sub">@(_puntaje?.Nivel ?? "—")</div>
+            </div>
+        </div>
+    </div>
+
+    @if (_puntaje?.Recomendaciones?.Count > 0)
+    {
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-white fw-bold"><i class="bi bi-lightbulb me-2 text-warning"></i>Recomendaciones</div>
+            <ul class="list-group list-group-flush">
+                @foreach (var r in _puntaje.Recomendaciones)
+                {
+                    <li class="list-group-item small">@r</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-bold"><i class="bi bi-bar-chart me-2 text-primary"></i>Resumen últimos 6 meses</div>
+        <div class="card-body">
+            @if (_tendencias?.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light"><tr><th>Mes</th><th>Ingresos</th><th>Gastos</th><th>Balance</th></tr></thead>
+                        <tbody>
+                            @foreach (var t in _tendencias.OrderByDescending(x => x.Anio * 100 + x.Mes).Take(6))
+                            {
+                                <tr>
+                                    <td>@(new DateTime(t.Anio, t.Mes, 1).ToString("MMM yyyy", new System.Globalization.CultureInfo("es-SV")))</td>
+                                    <td class="text-success">@Fmt(t.Ingresos)</td>
+                                    <td class="text-danger">@Fmt(t.Gastos)</td>
+                                    <td class="@(t.Ingresos - t.Gastos >= 0 ? "text-success" : "text-danger") fw-semibold">@Fmt(t.Ingresos - t.Gastos)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else { <p class="text-muted small mb-0">Sin datos de tendencias</p> }
+        </div>
+    </div>
+}
+
+@code {
+    bool _loading = true;
+    BalanceMensualDto? _balance;
+    PuntajeFinancieroDto? _puntaje;
+    List<TendenciaDto>? _tendencias;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var session = await AuthSvc.GetSessionAsync();
+        if (session is null) return;
+        try
+        {
+            var tasks = Task.WhenAll(
+                Api.GetBalanceAsync(session.HogarId).ContinueWith(t => _balance = t.Result),
+                Api.GetPuntajeAsync(session.HogarId).ContinueWith(t => _puntaje = t.Result),
+                Api.GetTendenciasAsync(session.HogarId).ContinueWith(t => _tendencias = t.Result)
+            );
+            await tasks;
+        }
+        catch { }
+        finally { _loading = false; }
+    }
+
+    string Fmt(decimal v) => "$" + v.ToString("N2");
+    string MesActual() => DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-SV"));
+}

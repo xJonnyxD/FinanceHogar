@@ -1,0 +1,35 @@
+@inject ToastService ToastSvc
+@implements IDisposable
+
+@if (_visible)
+{
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+        <div class="toast show align-items-center text-bg-@_type border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body fw-semibold">@_message</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        @onclick="Hide"></button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    bool _visible; string _message = ""; string _type = "success";
+    System.Threading.Timer? _timer;
+
+    protected override void OnInitialized() =>
+        ToastSvc.OnShow += ShowToast;
+
+    void ShowToast(string msg, string type)
+    {
+        _message = msg; _type = type; _visible = true;
+        InvokeAsync(StateHasChanged);
+        _timer?.Dispose();
+        _timer = new System.Threading.Timer(_ => { _visible = false; InvokeAsync(StateHasChanged); }, null, 3500, Timeout.Infinite);
+    }
+
+    void Hide() { _visible = false; _timer?.Dispose(); }
+
+    public void Dispose() { ToastSvc.OnShow -= ShowToast; _timer?.Dispose(); }
+}

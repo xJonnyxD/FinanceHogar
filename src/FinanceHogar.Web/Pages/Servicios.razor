@@ -1,0 +1,127 @@
+@page "/servicios"
+@attribute [Authorize]
+@inject ApiService Api
+@inject AuthService AuthSvc
+@inject ToastService Toast
+
+<PageTitle>Servicios Básicos — FinanceHogar</PageTitle>
+<PageHeader Title="Servicios Básicos" Icon="bi-lightning-charge" ButtonLabel="Nuevo Servicio" OnButtonClick="OpenCreate" />
+
+@if (_loading)
+{ <div class="text-center py-4"><div class="spinner-border text-primary"></div></div> }
+else if (!_items.Any())
+{ <EmptyState Icon="bi-plug" Message="No hay servicios registrados" ButtonLabel="Agregar servicio" OnButtonClick="OpenCreate" /> }
+else
+{
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr><th>Tipo</th><th>Proveedor</th><th>Monto Promedio</th><th>Vencimiento</th><th>Días anticip.</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in _items)
+                    {
+                        <tr>
+                            <td>@s.TipoServicio</td>
+                            <td>@s.NombreProveedor</td>
+                            <td class="fw-semibold">@Fmt(s.MontoPromedio)</td>
+                            <td>@s.FechaVencimiento.ToString("dd/MM/yyyy")</td>
+                            <td>@s.DiasAnticipacionNotificacion días</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="()=>Remove(s.Id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<ModalWrapper Visible="_showModal" Title="➕ Nuevo Servicio" OnClose="()=>_showModal=false" OnSave="Save" Saving="_saving">
+    <div class="row g-3">
+        <div class="col-6">
+            <label class="form-label fw-semibold">Tipo de servicio</label>
+            <select class="form-select" @bind="_form.TipoServicio">
+                <option value="1">Agua (ANDA)</option>
+                <option value="2">Electricidad Delsur</option>
+                <option value="3">Electricidad AES</option>
+                <option value="4">Internet Claro</option>
+                <option value="5">Internet Tigo</option>
+                <option value="6">Internet ANTEL</option>
+                <option value="7">Teléfono Claro</option>
+                <option value="8">Teléfono Tigo</option>
+                <option value="9">Gas</option>
+                <option value="10">Otro</option>
+            </select>
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">Proveedor *</label>
+            <input class="form-control" @bind="_form.NombreProveedor" placeholder="Ej: CAESS, ANDA, Claro..." />
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">Monto promedio *</label>
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input class="form-control" type="number" step="any" min="0" @bind="_form.MontoPromedio" />
+            </div>
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">Días de anticipación</label>
+            <input class="form-control" type="number" min="1" max="30" @bind="_form.DiasAnticipacionNotificacion" />
+        </div>
+        <div class="col-12">
+            <label class="form-label fw-semibold">Fecha de vencimiento</label>
+            <input class="form-control" type="date" @bind="_form.FechaVencimiento" />
+        </div>
+    </div>
+</ModalWrapper>
+
+@code {
+    bool _loading = true, _showModal, _saving;
+    List<ServicioBasicoDto> _items = [];
+    CreateServicioRequest _form = new();
+    Guid _hogarId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var s = await AuthSvc.GetSessionAsync();
+        if (s is null) return;
+        _hogarId = s.HogarId;
+        await Load();
+    }
+
+    async Task Load()
+    {
+        _loading = true;
+        try { _items = await Api.GetServiciosAsync(_hogarId) ?? []; }
+        catch (Exception e) { Toast.Error(e.Message); }
+        finally { _loading = false; }
+    }
+
+    void OpenCreate()
+    {
+        _form = new CreateServicioRequest { HogarId = _hogarId, FechaVencimiento = DateOnly.FromDateTime(DateTime.Today.AddMonths(1)) };
+        _showModal = true;
+    }
+
+    async Task Save()
+    {
+        if (string.IsNullOrWhiteSpace(_form.NombreProveedor)) { Toast.Error("El nombre del proveedor es requerido"); return; }
+        if (_form.MontoPromedio <= 0) { Toast.Error("Ingresa un monto promedio válido"); return; }
+        _saving = true;
+        try { await Api.CreateServicioAsync(_form); Toast.Success("Servicio creado ✓"); _showModal = false; await Load(); }
+        catch (Exception e) { Toast.Error(e.Message); }
+        finally { _saving = false; }
+    }
+
+    async Task Remove(Guid id)
+    {
+        try { await Api.DeleteServicioAsync(id); Toast.Success("Servicio eliminado"); await Load(); }
+        catch (Exception e) { Toast.Error(e.Message); }
+    }
+    string Fmt(decimal v) => "$" + v.ToString("N2");
+}

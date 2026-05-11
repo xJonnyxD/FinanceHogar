@@ -1,0 +1,143 @@
+@page "/ingresos"
+@attribute [Authorize]
+@inject ApiService Api
+@inject AuthService AuthSvc
+@inject ToastService Toast
+
+<PageTitle>Ingresos — FinanceHogar</PageTitle>
+<PageHeader Title="Ingresos" Icon="bi-arrow-down-circle" ButtonLabel="Nuevo Ingreso" OnButtonClick="OpenCreate" />
+
+@if (_loading)
+{ <div class="text-center py-4"><div class="spinner-border text-success"></div></div> }
+else if (!_items.Any())
+{ <EmptyState Icon="bi-cash-stack" Message="No hay ingresos registrados" ButtonLabel="Registrar primer ingreso" OnButtonClick="OpenCreate" /> }
+else
+{
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Tipo</th><th>Monto</th><th>Moneda</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var g in _items)
+                    {
+                        <tr>
+                            <td>@g.FechaIngreso.ToString("dd/MM/yyyy")</td>
+                            <td>@(g.Descripcion ?? "—")</td>
+                            <td><span class="badge bg-success bg-opacity-10 text-success">@g.NombreCategoria</span></td>
+                            <td>@g.Tipo</td>
+                            <td class="fw-semibold text-success">@Fmt(g.Monto)</td>
+                            <td>@g.Moneda</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="()=>Remove(g.Id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<ModalWrapper Visible="_showModal" Title="➕ Nuevo Ingreso" OnClose="CloseModal" OnSave="Save" Saving="_saving">
+    <div class="row g-3">
+        <div class="col-12">
+            <label class="form-label fw-semibold">Categoría *</label>
+            <select class="form-select" @bind="_form.CategoriaId">
+                <option value="@Guid.Empty">Seleccionar...</option>
+                @foreach (var c in _categorias)
+                { <option value="@c.Id">@c.Nombre</option> }
+            </select>
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">Monto *</label>
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input class="form-control" type="number" step="any" min="0" @bind="_form.Monto" />
+            </div>
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">Moneda</label>
+            <select class="form-select" @bind="_form.Moneda">
+                <option value="1">USD</option>
+                <option value="2">BTC (Bitcoin)</option>
+            </select>
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">Tipo de ingreso</label>
+            <select class="form-select" @bind="_form.Tipo">
+                <option value="1">Salario</option>
+                <option value="2">Remesa</option>
+                <option value="3">Negocio</option>
+                <option value="4">Freelance</option>
+                <option value="5">Ingreso Informal</option>
+                <option value="6">Tanda</option>
+                <option value="7">Otro</option>
+            </select>
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">Fecha *</label>
+            <input class="form-control" type="date" @bind="_form.FechaIngreso" />
+        </div>
+        <div class="col-12">
+            <label class="form-label fw-semibold">Descripción</label>
+            <input class="form-control" @bind="_form.Descripcion" placeholder="Opcional" />
+        </div>
+    </div>
+</ModalWrapper>
+
+@code {
+    bool _loading = true, _showModal, _saving;
+    List<IngresoDto> _items = [];
+    List<CategoriaDto> _categorias = [];
+    CreateIngresoRequest _form = new();
+    Guid _hogarId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var s = await AuthSvc.GetSessionAsync();
+        if (s is null) return;
+        _hogarId = s.HogarId;
+        await Load();
+    }
+
+    async Task Load()
+    {
+        _loading = true;
+        try
+        {
+            var cats = await Api.GetCategoriasAsync(_hogarId);
+            _categorias = (cats ?? []).Where(c => c.EsIngreso).ToList();
+            _items = await Api.GetIngresosAsync(_hogarId) ?? [];
+        }
+        catch (Exception e) { Toast.Error(e.Message); }
+        finally { _loading = false; }
+    }
+
+    void OpenCreate()
+    {
+        _form = new CreateIngresoRequest { HogarId = _hogarId, FechaIngreso = DateOnly.FromDateTime(DateTime.Today) };
+        _showModal = true;
+    }
+    void CloseModal() => _showModal = false;
+
+    async Task Save()
+    {
+        if (_form.CategoriaId == Guid.Empty) { Toast.Error("Selecciona una categoría"); return; }
+        if (_form.Monto <= 0) { Toast.Error("Ingresa un monto válido mayor a 0"); return; }
+        _saving = true;
+        try { await Api.CreateIngresoAsync(_form); Toast.Success("Ingreso registrado ✓"); _showModal = false; await Load(); }
+        catch (Exception e) { Toast.Error(e.Message); }
+        finally { _saving = false; }
+    }
+
+    async Task Remove(Guid id)
+    {
+        try { await Api.DeleteIngresoAsync(id); Toast.Success("Ingreso eliminado"); await Load(); }
+        catch (Exception e) { Toast.Error(e.Message); }
+    }
+    string Fmt(decimal v) => "$" + v.ToString("N2");
+}

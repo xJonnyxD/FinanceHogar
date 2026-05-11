@@ -1,0 +1,133 @@
+@page "/remesas"
+@attribute [Authorize]
+@inject ApiService Api
+@inject AuthService AuthSvc
+@inject ToastService Toast
+
+<PageTitle>Remesas — FinanceHogar</PageTitle>
+<PageHeader Title="Remesas" Icon="bi-send" ButtonLabel="Registrar Remesa" OnButtonClick="OpenCreate" />
+
+@if (_loading)
+{ <div class="text-center py-4"><div class="spinner-border text-primary"></div></div> }
+else if (!_items.Any())
+{ <EmptyState Icon="bi-send" Message="No hay remesas registradas" ButtonLabel="Registrar remesa" OnButtonClick="OpenCreate" /> }
+else
+{
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr><th>Fecha</th><th>País origen</th><th>Empresa</th><th>Confirmación</th><th>Monto</th><th>Moneda</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in _items)
+                    {
+                        <tr>
+                            <td>@r.FechaRecepcion.ToString("dd/MM/yyyy")</td>
+                            <td>@r.PaisOrigen</td>
+                            <td>@r.Empresa</td>
+                            <td>@(r.NumeroConfirmacion ?? "—")</td>
+                            <td class="fw-semibold text-primary">@Fmt(r.Monto)</td>
+                            <td>@r.Moneda</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="()=>Remove(r.Id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<ModalWrapper Visible="_showModal" Title="✈️ Registrar Remesa" OnClose="()=>_showModal=false" OnSave="Save" Saving="_saving">
+    <div class="row g-3">
+        <div class="col-12">
+            <label class="form-label fw-semibold">Categoría *</label>
+            <select class="form-select" @bind="_form.CategoriaId">
+                <option value="@Guid.Empty">Seleccionar...</option>
+                @foreach (var c in _categorias)
+                { <option value="@c.Id">@c.Nombre</option> }
+            </select>
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">Monto *</label>
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input class="form-control" type="number" step="any" min="0" @bind="_form.Monto" />
+            </div>
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">País origen</label>
+            <input class="form-control" @bind="_form.PaisOrigen" />
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">Empresa *</label>
+            <input class="form-control" @bind="_form.Empresa" placeholder="Western Union, Remitly..." />
+        </div>
+        <div class="col-6">
+            <label class="form-label fw-semibold">N° Confirmación</label>
+            <input class="form-control" @bind="_form.NumeroConfirmacion" placeholder="ABC12345" />
+        </div>
+        <div class="col-12">
+            <label class="form-label fw-semibold">Fecha de recepción</label>
+            <input class="form-control" type="date" @bind="_form.FechaRecepcion" />
+        </div>
+    </div>
+</ModalWrapper>
+
+@code {
+    bool _loading = true, _showModal, _saving;
+    List<RemesaDto> _items = [];
+    List<CategoriaDto> _categorias = [];
+    CreateRemesaRequest _form = new();
+    Guid _hogarId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var s = await AuthSvc.GetSessionAsync();
+        if (s is null) return;
+        _hogarId = s.HogarId;
+        await Load();
+    }
+
+    async Task Load()
+    {
+        _loading = true;
+        try
+        {
+            var cats = await Api.GetCategoriasAsync(_hogarId);
+            _categorias = (cats ?? []).Where(c => c.EsIngreso).ToList();
+            _items = await Api.GetRemesasAsync(_hogarId) ?? [];
+        }
+        catch (Exception e) { Toast.Error(e.Message); }
+        finally { _loading = false; }
+    }
+
+    void OpenCreate()
+    {
+        var cat = _categorias.FirstOrDefault(c => c.Nombre.Contains("remesa", StringComparison.OrdinalIgnoreCase));
+        _form = new CreateRemesaRequest { HogarId = _hogarId, CategoriaId = cat?.Id ?? Guid.Empty, FechaRecepcion = DateOnly.FromDateTime(DateTime.Today) };
+        _showModal = true;
+    }
+
+    async Task Save()
+    {
+        if (_form.CategoriaId == Guid.Empty) { Toast.Error("Selecciona una categoría"); return; }
+        if (_form.Monto <= 0) { Toast.Error("Ingresa un monto válido"); return; }
+        if (string.IsNullOrWhiteSpace(_form.Empresa)) { Toast.Error("La empresa es requerida"); return; }
+        _saving = true;
+        try { await Api.CreateRemesaAsync(_form); Toast.Success("Remesa registrada ✓"); _showModal = false; await Load(); }
+        catch (Exception e) { Toast.Error(e.Message); }
+        finally { _saving = false; }
+    }
+
+    async Task Remove(Guid id)
+    {
+        try { await Api.DeleteRemesaAsync(id); Toast.Success("Remesa eliminada"); await Load(); }
+        catch (Exception e) { Toast.Error(e.Message); }
+    }
+    string Fmt(decimal v) => "$" + v.ToString("N2");
+}

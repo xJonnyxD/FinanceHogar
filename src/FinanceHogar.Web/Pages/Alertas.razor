@@ -1,0 +1,62 @@
+@page "/alertas"
+@attribute [Authorize]
+@inject ApiService Api
+@inject AuthService AuthSvc
+@inject ToastService Toast
+
+<PageTitle>Alertas — FinanceHogar</PageTitle>
+<PageHeader Title="Alertas" Icon="bi-bell" />
+
+@if (_loading)
+{ <div class="text-center py-4"><div class="spinner-border text-warning"></div></div> }
+else if (!_items.Any())
+{ <EmptyState Icon="bi-bell-slash" Message="No tienes alertas pendientes" /> }
+else
+{
+    <div class="list-group gap-2">
+        @foreach (var a in _items)
+        {
+            <div class="list-group-item list-group-item-action border-0 shadow-sm rounded mb-2 d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="fw-semibold">@a.Tipo</div>
+                    <p class="mb-1 small text-muted">@a.Mensaje</p>
+                    <small class="text-muted">@a.FechaGeneracion.ToString("dd/MM/yyyy HH:mm")</small>
+                </div>
+                @if (a.Estado != "Leida")
+                {
+                    <button class="btn btn-sm btn-outline-success ms-2" @onclick="()=>Leer(a.Id)">
+                        <i class="bi bi-check2"></i>
+                    </button>
+                }
+                else
+                { <span class="badge bg-secondary ms-2">Leída</span> }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    bool _loading = true;
+    List<AlertaDto> _items = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var s = await AuthSvc.GetSessionAsync();
+        if (s is null) return;
+        try { _items = await Api.GetAlertasAsync(s.HogarId) ?? []; }
+        catch { }
+        finally { _loading = false; }
+    }
+
+    async Task Leer(Guid id)
+    {
+        try
+        {
+            await Api.MarcarLeidaAsync(id);
+            var a = _items.FirstOrDefault(x => x.Id == id);
+            if (a is not null) _items[_items.IndexOf(a)] = a with { Estado = "Leida" };
+            Toast.Success("Alerta marcada como leída");
+        }
+        catch (Exception e) { Toast.Error(e.Message); }
+    }
+}

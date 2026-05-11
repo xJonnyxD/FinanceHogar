@@ -1,0 +1,16 @@
+@code {
+    [Parameter] public string Icon { get; set; } = "bi-inbox";
+    [Parameter] public string Message { get; set; } = "No hay datos";
+    [Parameter] public string? ButtonLabel { get; set; }
+    [Parameter] public EventCallback OnButtonClick { get; set; }
+}
+<div class="text-center py-5 text-muted">
+    <i class="bi @Icon" style="font-size:3rem"></i>
+    <p class="mt-3">@Message</p>
+    @if (!string.IsNullOrEmpty(ButtonLabel))
+    {
+        <button class="btn btn-primary" @onclick="OnButtonClick">
+            <i class="bi bi-plus-lg me-1"></i>@ButtonLabel
+        </button>
+    }
+</div>

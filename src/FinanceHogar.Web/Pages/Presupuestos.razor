@@ -1,0 +1,126 @@
+@page "/presupuestos"
+@attribute [Authorize]
+@inject ApiService Api
+@inject AuthService AuthSvc
+@inject ToastService Toast
+
+<PageTitle>Presupuestos — FinanceHogar</PageTitle>
+<PageHeader Title="Presupuestos" Icon="bi-bar-chart-line" ButtonLabel="Nuevo Presupuesto" OnButtonClick="OpenCreate" />
+
+<div class="d-flex gap-2 mb-3">
+    <select class="form-select form-select-sm" style="width:auto" @bind="_anio" @bind:after="Load">
+        @for (int y = DateTime.Today.Year; y >= DateTime.Today.Year - 2; y--)
+        { <option value="@y">@y</option> }
+    </select>
+    <select class="form-select form-select-sm" style="width:auto" @bind="_mes" @bind:after="Load">
+        @for (int m = 1; m <= 12; m++)
+        { <option value="@m">@(new DateTime(2000, m, 1).ToString("MMMM", new System.Globalization.CultureInfo("es-SV")))</option> }
+    </select>
+</div>
+
+@if (_loading)
+{ <div class="text-center py-4"><div class="spinner-border text-primary"></div></div> }
+else if (!_items.Any())
+{ <EmptyState Icon="bi-bar-chart" Message="No hay presupuestos para este período" ButtonLabel="Crear primer presupuesto" OnButtonClick="OpenCreate" /> }
+else
+{
+    <div class="row g-3">
+        @foreach (var p in _items)
+        {
+            var pct = (int)Math.Min(p.PorcentajeUso, 100);
+            var color = pct >= 90 ? "danger" : pct >= 70 ? "warning" : "success";
+            <div class="col-md-6 col-xl-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-semibold">@p.NombreCategoria</span>
+                            <button class="btn btn-sm btn-outline-danger p-1" @onclick="()=>Remove(p.Id)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                        <div class="progress mb-2" style="height:8px">
+                            <div class="progress-bar bg-@color" style="width:@pct%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted">
+                            <span>Gastado: $@p.MontoGastado.ToString("N2")</span>
+                            <span>Límite: $@p.MontoLimite.ToString("N2")</span>
+                        </div>
+                        <div class="text-end small fw-semibold text-@color mt-1">@pct%</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<ModalWrapper Visible="_showModal" Title="➕ Nuevo Presupuesto" OnClose="()=>_showModal=false" OnSave="Save" Saving="_saving">
+    <div class="row g-3">
+        <div class="col-12">
+            <label class="form-label fw-semibold">Categoría *</label>
+            <select class="form-select" @bind="_form.CategoriaId">
+                <option value="@Guid.Empty">Seleccionar...</option>
+                @foreach (var c in _categorias)
+                { <option value="@c.Id">@c.Nombre</option> }
+            </select>
+        </div>
+        <div class="col-12">
+            <label class="form-label fw-semibold">Monto límite *</label>
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input class="form-control" type="number" step="any" min="0" @bind="_form.MontoLimite" />
+            </div>
+        </div>
+    </div>
+</ModalWrapper>
+
+@code {
+    bool _loading = true, _showModal, _saving;
+    List<PresupuestoDto> _items = [];
+    List<CategoriaDto> _categorias = [];
+    CreatePresupuestoRequest _form = new();
+    Guid _hogarId;
+    int _anio = DateTime.Today.Year, _mes = DateTime.Today.Month;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var s = await AuthSvc.GetSessionAsync();
+        if (s is null) return;
+        _hogarId = s.HogarId;
+        await Load();
+    }
+
+    async Task Load()
+    {
+        _loading = true;
+        try
+        {
+            var cats = await Api.GetCategoriasAsync(_hogarId);
+            _categorias = (cats ?? []).Where(c => !c.EsIngreso).ToList();
+            _items = await Api.GetPresupuestosAsync(_hogarId, _anio, _mes) ?? [];
+        }
+        catch (Exception e) { Toast.Error(e.Message); }
+        finally { _loading = false; }
+    }
+
+    void OpenCreate()
+    {
+        _form = new CreatePresupuestoRequest { HogarId = _hogarId, Anio = _anio, Mes = _mes };
+        _showModal = true;
+    }
+
+    async Task Save()
+    {
+        if (_form.CategoriaId == Guid.Empty) { Toast.Error("Selecciona una categoría"); return; }
+        if (_form.MontoLimite <= 0) { Toast.Error("Ingresa un monto límite válido"); return; }
+        _saving = true;
+        try { await Api.CreatePresupuestoAsync(_form); Toast.Success("Presupuesto creado ✓"); _showModal = false; await Load(); }
+        catch (Exception e) { Toast.Error(e.Message); }
+        finally { _saving = false; }
+    }
+
+    async Task Remove(Guid id)
+    {
+        try { await Api.DeletePresupuestoAsync(id); Toast.Success("Presupuesto eliminado"); await Load(); }
+        catch (Exception e) { Toast.Error(e.Message); }
+    }
+}
