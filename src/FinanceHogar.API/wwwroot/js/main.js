@@ -221,6 +221,9 @@ document.addEventListener('alpine:init', () => {
     },
     async save() {
       const store = Alpine.store('fh');
+      if (!this.form.categoriaId) return store.showToast('Debes seleccionar una categoría', 'danger');
+      if (!this.form.monto || isNaN(parseFloat(this.form.monto)) || parseFloat(this.form.monto) <= 0) return store.showToast('Ingresa un monto válido mayor a 0', 'danger');
+      if (!this.form.fechaGasto) return store.showToast('La fecha es requerida', 'danger');
       try {
         const payload = { ...this.form, monto: parseFloat(this.form.monto) };
         if (this.modal === 'create') {
@@ -279,6 +282,8 @@ document.addEventListener('alpine:init', () => {
     },
     async save() {
       const store = Alpine.store('fh');
+      if (!this.form.categoriaId) return store.showToast('Debes seleccionar una categoría', 'danger');
+      if (!this.form.monto || isNaN(parseFloat(this.form.monto)) || parseFloat(this.form.monto) <= 0) return store.showToast('Ingresa un monto válido mayor a 0', 'danger');
       try {
         const payload = { ...this.form, monto: parseFloat(this.form.monto) };
         if (this.modal === 'create') {
@@ -331,6 +336,8 @@ document.addEventListener('alpine:init', () => {
     openEdit(item) { this.editing = item; this.form = { montoLimite: item.montoLimite }; this.modal = 'edit'; },
     async save() {
       const store = Alpine.store('fh');
+      if (this.modal === 'create' && !this.form.categoriaId) return store.showToast('Debes seleccionar una categoría', 'danger');
+      if (!this.form.montoLimite || isNaN(parseFloat(this.form.montoLimite)) || parseFloat(this.form.montoLimite) <= 0) return store.showToast('Ingresa un monto límite válido mayor a 0', 'danger');
       try {
         if (this.modal === 'create') {
           this.items.push(await api.createPresupuesto({ ...this.form, montoLimite: parseFloat(this.form.montoLimite) }));
@@ -422,6 +429,8 @@ document.addEventListener('alpine:init', () => {
     },
     async save() {
       const store = Alpine.store('fh');
+      if (!this.form.nombreProveedor?.trim()) return store.showToast('El nombre del proveedor es requerido', 'danger');
+      if (!this.form.montoPromedio || isNaN(parseFloat(this.form.montoPromedio)) || parseFloat(this.form.montoPromedio) <= 0) return store.showToast('Ingresa un monto promedio válido', 'danger');
       try {
         const payload = { ...this.form, montoPromedio: parseFloat(this.form.montoPromedio) };
         if (this.modal === 'create') {
@@ -469,6 +478,8 @@ document.addEventListener('alpine:init', () => {
     openEdit(item) { this.editing = item; this.form = { nombre: item.nombre, cuotaMensual: item.cuotaMensual }; this.modal = 'edit'; },
     async save() {
       const store = Alpine.store('fh');
+      if (!this.form.nombre?.trim()) return store.showToast('El nombre de la tanda es requerido', 'danger');
+      if (!this.form.cuotaMensual || isNaN(parseFloat(this.form.cuotaMensual)) || parseFloat(this.form.cuotaMensual) <= 0) return store.showToast('Ingresa una cuota mensual válida', 'danger');
       try {
         if (this.modal === 'create') {
           this.items.unshift(await api.createTanda({ ...this.form, cuotaMensual: parseFloat(this.form.cuotaMensual), totalParticipantes: parseInt(this.form.totalParticipantes) }));
@@ -524,6 +535,8 @@ document.addEventListener('alpine:init', () => {
     },
     async save() {
       const store = Alpine.store('fh');
+      if (!this.form.categoriaId) return store.showToast('Debes seleccionar una categoría', 'danger');
+      if (!this.form.monto || isNaN(parseFloat(this.form.monto)) || parseFloat(this.form.monto) <= 0) return store.showToast('Ingresa un monto válido mayor a 0', 'danger');
       try {
         if (this.modal === 'create') {
           this.items.unshift(await api.createRemesa({ ...this.form, monto: parseFloat(this.form.monto) }));
