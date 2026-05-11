@@ -77,12 +77,16 @@ public class ApiService(HttpClient http)
         await http.DeleteAsync($"api/v1/remesas/{id}");
 
     // ── Reportes ─────────────────────────────────────────────
-    public Task<BalanceMensualDto?> GetBalanceAsync(Guid hogarId) =>
-        http.GetFromJsonAsync<BalanceMensualDto>($"api/v1/reportes/balance-mensual/{hogarId}");
+    public Task<BalanceMensualDto?> GetBalanceAsync(Guid hogarId)
+    {
+        var now = DateTime.Now;
+        return http.GetFromJsonAsync<BalanceMensualDto>(
+            $"api/v1/reportes/balance-mensual?hogarId={hogarId}&anio={now.Year}&mes={now.Month}");
+    }
     public Task<PuntajeFinancieroDto?> GetPuntajeAsync(Guid hogarId) =>
-        http.GetFromJsonAsync<PuntajeFinancieroDto>($"api/v1/reportes/puntaje-financiero/{hogarId}");
+        http.GetFromJsonAsync<PuntajeFinancieroDto>($"api/v1/reportes/puntaje-financiero?hogarId={hogarId}");
     public Task<List<TendenciaDto>?> GetTendenciasAsync(Guid hogarId) =>
-        http.GetFromJsonAsync<List<TendenciaDto>>($"api/v1/reportes/tendencias/{hogarId}");
+        http.GetFromJsonAsync<List<TendenciaDto>>($"api/v1/reportes/tendencias?hogarId={hogarId}");
 
     // ── Helpers ──────────────────────────────────────────────
     private async Task<T?> PostAsync<T>(string url, object body)
