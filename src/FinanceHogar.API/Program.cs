@@ -138,8 +138,8 @@ if (app.Environment.IsDevelopment())
 // ── Middleware pipeline ───────────────────────────────────────────────────────
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseSerilogRequestLogging();
+app.UseCors();              // CORS antes de HttpsRedirection — resuelve 405 en preflight OPTIONS
 app.UseHttpsRedirection();
-app.UseCors();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
