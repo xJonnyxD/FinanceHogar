@@ -125,6 +125,7 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+    await FinanceHogar.Infrastructure.Data.DbSeeder.SeedAsync(db);
 
     app.UseSwagger();
     app.UseSwaggerUI(c =>
