@@ -144,25 +144,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Servir archivos estáticos del frontend (wwwroot/) sin caché para JS/HTML
-app.UseDefaultFiles();
-app.UseStaticFiles(new StaticFileOptions
-{
-    OnPrepareResponse = ctx =>
-    {
-        var ext = Path.GetExtension(ctx.File.Name);
-        if (ext is ".js" or ".html" or ".css")
-        {
-            ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-            ctx.Context.Response.Headers["Pragma"] = "no-cache";
-        }
-    }
-});
-
 app.MapControllers().RequireRateLimiting("Fixed");
 app.MapHealthChecks("/health");
-
-// SPA fallback: cualquier ruta no-API → index.html
-app.MapFallbackToFile("index.html");
 
 app.Run();

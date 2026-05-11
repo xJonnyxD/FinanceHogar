@@ -21,7 +21,17 @@ public class AuthService(HttpClient http, ILocalStorageService localStorage,
             if (!resp.IsSuccessStatusCode)
             {
                 var err = await resp.Content.ReadAsStringAsync();
-                return (false, "Credenciales incorrectas");
+                // Extraer mensaje legible del JSON de error si existe
+                try
+                {
+                    var errObj = System.Text.Json.JsonDocument.Parse(err);
+                    if (errObj.RootElement.TryGetProperty("message", out var msg))
+                        return (false, msg.GetString());
+                    if (errObj.RootElement.TryGetProperty("title", out var title))
+                        return (false, title.GetString());
+                }
+                catch { }
+                return (false, string.IsNullOrWhiteSpace(err) ? $"Error {(int)resp.StatusCode}" : err);
             }
             var data = await resp.Content.ReadFromJsonAsync<LoginResponse>();
             if (data is null) return (false, "Respuesta inválida");
