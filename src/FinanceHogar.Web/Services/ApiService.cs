@@ -11,7 +11,7 @@ public class ApiService(HttpClient http)
 
     // ── Categorías ───────────────────────────────────────────
     public Task<List<CategoriaDto>?> GetCategoriasAsync(Guid hogarId) =>
-        http.GetFromJsonAsync<List<CategoriaDto>>($"api/v1/categorias/hogar/{hogarId}");
+        http.GetFromJsonAsync<List<CategoriaDto>>($"api/v1/categorias?hogarId={hogarId}");
 
     // ── Gastos ───────────────────────────────────────────────
     public Task<List<GastoDto>?> GetGastosAsync(Guid hogarId, DateOnly? desde = null, DateOnly? hasta = null)
@@ -46,7 +46,7 @@ public class ApiService(HttpClient http)
 
     // ── Alertas ──────────────────────────────────────────────
     public Task<List<AlertaDto>?> GetAlertasAsync(Guid hogarId) =>
-        http.GetFromJsonAsync<List<AlertaDto>>($"api/v1/alertas/hogar/{hogarId}");
+        http.GetFromJsonAsync<List<AlertaDto>>($"api/v1/alertas?hogarId={hogarId}");
     public async Task MarcarLeidaAsync(Guid id) =>
         await http.PutAsync($"api/v1/alertas/{id}/leer", null);
 
