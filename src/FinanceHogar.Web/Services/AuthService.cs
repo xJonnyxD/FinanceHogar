@@ -17,7 +17,7 @@ public class AuthService(HttpClient http, ILocalStorageService localStorage,
     {
         try
         {
-            var resp = await http.PostAsJsonAsync("api/auth/login", new { email, password });
+            var resp = await http.PostAsJsonAsync("api/v1/auth/login", new { email, password });
             if (!resp.IsSuccessStatusCode)
             {
                 var err = await resp.Content.ReadAsStringAsync();
@@ -52,7 +52,7 @@ public class AuthService(HttpClient http, ILocalStorageService localStorage,
     {
         try
         {
-            var resp = await http.PostAsJsonAsync("api/auth/register", req);
+            var resp = await http.PostAsJsonAsync("api/v1/auth/register", req);
             if (!resp.IsSuccessStatusCode)
             {
                 var err = await resp.Content.ReadAsStringAsync();
