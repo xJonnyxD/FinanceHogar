@@ -385,14 +385,14 @@
                 </div>
                 <div class="col-6">
                   <label class="form-label fw-semibold">Moneda</label>
-                  <select class="form-select" x-model="form.moneda">
-                    <option value="USD">USD</option>
-                    <option value="BTC">BTC (Bitcoin)</option>
+                  <select class="form-select" x-model.number="form.moneda">
+                    <option value="1">USD</option>
+                    <option value="2">BTC (Bitcoin)</option>
                   </select>
                 </div>
                 <div class="col-6">
                   <label class="form-label fw-semibold">Tipo de gasto</label>
-                  <select class="form-select" x-model="form.tipo">
+                  <select class="form-select" x-model.number="form.tipo">
                     <option value="1">Servicio Básico</option>
                     <option value="2">Alimentación</option>
                     <option value="3">Educación</option>
@@ -420,7 +420,7 @@
                 </div>
                 <div class="col-6" x-show="form.esRecurrente">
                   <label class="form-label fw-semibold">Frecuencia</label>
-                  <select class="form-select" x-model="form.frecuencia">
+                  <select class="form-select" x-model.number="form.frecuencia">
                     <option value="1">Diaria</option>
                     <option value="2">Semanal</option>
                     <option value="3">Mensual</option>
@@ -537,14 +537,14 @@
                 </div>
                 <div class="col-6">
                   <label class="form-label fw-semibold">Moneda</label>
-                  <select class="form-select" x-model="form.moneda">
-                    <option value="USD">USD</option>
-                    <option value="BTC">BTC (Bitcoin)</option>
+                  <select class="form-select" x-model.number="form.moneda">
+                    <option value="1">USD</option>
+                    <option value="2">BTC (Bitcoin)</option>
                   </select>
                 </div>
                 <div class="col-6">
                   <label class="form-label fw-semibold">Tipo de ingreso</label>
-                  <select class="form-select" x-model="form.tipo">
+                  <select class="form-select" x-model.number="form.tipo">
                     <option value="1">Salario</option>
                     <option value="2">Remesa</option>
                     <option value="3">Negocio</option>
@@ -570,7 +570,7 @@
                 </div>
                 <div class="col-6" x-show="form.esRecurrente">
                   <label class="form-label fw-semibold">Frecuencia</label>
-                  <select class="form-select" x-model="form.frecuencia">
+                  <select class="form-select" x-model.number="form.frecuencia">
                     <option value="1">Diaria</option>
                     <option value="2">Semanal</option>
                     <option value="3">Mensual</option>
@@ -1045,9 +1045,9 @@
                 </div>
                 <div class="col-6" x-show="modal==='create'">
                   <label class="form-label fw-semibold">Moneda</label>
-                  <select class="form-select" x-model="form.moneda">
-                    <option value="USD">USD</option>
-                    <option value="BTC">BTC</option>
+                  <select class="form-select" x-model.number="form.moneda">
+                    <option value="1">USD</option>
+                    <option value="2">BTC (Bitcoin)</option>
                   </select>
                 </div>
                 <div class="col-6" x-show="modal==='create'">

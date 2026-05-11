@@ -211,7 +211,7 @@ document.addEventListener('alpine:init', () => {
 
     openCreate() {
       const today = new Date().toISOString().split('T')[0];
-      this.form = { hogarId: Alpine.store('fh').hogarId, categoriaId: '', monto: '', moneda: 'USD', tipo: 1, descripcion: '', fechaGasto: today, esRecurrente: false, frecuencia: null };
+      this.form = { hogarId: Alpine.store('fh').hogarId, categoriaId: '', monto: '', moneda: 1, tipo: 1, descripcion: '', fechaGasto: today, esRecurrente: false, frecuencia: null };
       this.modal = 'create';
     },
     openEdit(item) {
@@ -272,7 +272,7 @@ document.addEventListener('alpine:init', () => {
 
     openCreate() {
       const today = new Date().toISOString().split('T')[0];
-      this.form = { hogarId: Alpine.store('fh').hogarId, categoriaId: '', monto: '', moneda: 'USD', tipo: 1, descripcion: '', fechaIngreso: today, esRecurrente: false, frecuencia: null };
+      this.form = { hogarId: Alpine.store('fh').hogarId, categoriaId: '', monto: '', moneda: 1, tipo: 1, descripcion: '', fechaIngreso: today, esRecurrente: false, frecuencia: null };
       this.modal = 'create';
     },
     openEdit(item) {
@@ -525,7 +525,7 @@ document.addEventListener('alpine:init', () => {
     openCreate() {
       const today = new Date().toISOString().split('T')[0];
       const cat = this.categorias.find(c => c.nombre.toLowerCase().includes('remesa'));
-      this.form = { hogarId: Alpine.store('fh').hogarId, categoriaId: cat?.id ?? '', monto: '', moneda: 'USD', paisOrigen: 'Estados Unidos', empresa: '', numeroConfirmacion: '', fechaRecepcion: today };
+      this.form = { hogarId: Alpine.store('fh').hogarId, categoriaId: cat?.id ?? '', monto: '', moneda: 1, paisOrigen: 'Estados Unidos', empresa: '', numeroConfirmacion: '', fechaRecepcion: today };
       this.modal = 'create';
     },
     openEdit(item) {
