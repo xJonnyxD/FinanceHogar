@@ -3,100 +3,182 @@
 @inject AuthService AuthSvc
 @inject NavigationManager Nav
 
+<PageTitle>FinanceHogar — Acceso</PageTitle>
+
 <div class="auth-wrapper">
+    <div class="auth-orb2"></div>
+
     <div class="auth-card">
+
+        @* Logo  *@
         <div class="text-center mb-4">
-            <i class="bi bi-house-heart-fill text-primary" style="font-size:3rem"></i>
-            <h4 class="mt-2 fw-bold">FinanceHogar</h4>
-            <p class="text-muted small">Control financiero para familias salvadoreñas</p>
+            <div class="mb-2">
+                <i class="bi bi-house-heart-fill auth-logo-icon"></i>
+            </div>
+            <div class="auth-title">FinanceHogar</div>
+            <div class="auth-subtitle mt-1">
+                <span class="auth-online-dot me-1"></span>
+                Sistema de control financiero familiar
+            </div>
         </div>
 
-        <ul class="nav nav-pills nav-fill mb-4">
-            <li class="nav-item">
-                <button class="nav-link w-100 @(_tab=="login"?"active":"")" @onclick='()=>_tab="login"'>Iniciar sesión</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link w-100 @(_tab=="register"?"active":"")" @onclick='()=>_tab="register"'>Registrarse</button>
-            </li>
-        </ul>
+        @* Tabs  *@
+        <div class="auth-tabs mb-4">
+            <button class="auth-tab @(_tab=="login"?"active":"")" @onclick='()=>{ _tab="login"; _error=""; }'>
+                <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
+            </button>
+            <button class="auth-tab @(_tab=="register"?"active":"")" @onclick='()=>{ _tab="register"; _error=""; }'>
+                <i class="bi bi-person-plus me-1"></i>Registrarse
+            </button>
+        </div>
 
+        @* Error  *@
         @if (!string.IsNullOrEmpty(_error))
         {
-            <div class="alert alert-danger py-2 small">@_error</div>
+            <div class="auth-error mb-3">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @_error
+            </div>
         }
 
         @if (_tab == "login")
         {
+            @* Acceso rápido  *@
             <div class="mb-3">
-                <p class="text-muted small text-center mb-2">Acceso rápido (demo)</p>
+                <div class="auth-quick-label mb-2">⚡ Acceso rápido (demo)</div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary btn-sm flex-fill"
-                            @onclick='async ()=>{_email="admin@financehogar.com";_pass="Admin1234!";await DoLogin();}'>
-                        <i class="bi bi-shield-lock me-1"></i>Admin
+                    <button class="auth-quick-btn auth-quick-admin" @onclick="LoginAdmin" disabled="@_loading">
+                        <i class="bi bi-shield-fill-check"></i>
+                        <span>Admin</span>
                     </button>
-                    <button class="btn btn-outline-secondary btn-sm flex-fill"
-                            @onclick='async ()=>{_email="usuario@financehogar.com";_pass="User1234!";await DoLogin();}'>
-                        <i class="bi bi-person me-1"></i>Usuario
+                    <button class="auth-quick-btn auth-quick-user" @onclick="LoginUsuario" disabled="@_loading">
+                        <i class="bi bi-person-fill"></i>
+                        <span>Usuario</span>
                     </button>
                 </div>
             </div>
 
+            <div class="auth-divider mb-3">o ingresa tus credenciales</div>
+
+            @* Correo  *@
             <div class="mb-3">
-                <label class="form-label fw-semibold">Correo electrónico</label>
-                <input class="form-control" type="email" @bind="_email" placeholder="correo@ejemplo.com" />
+                <label class="auth-label">Correo electrónico</label>
+                <div class="auth-input-group">
+                    <i class="bi bi-envelope auth-input-icon"></i>
+                    <input class="auth-input" type="email" @bind="_email" placeholder="correo@ejemplo.com" />
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Contraseña</label>
-                <input class="form-control" type="password" @bind="_pass" placeholder="••••••••" />
+
+            @* Contraseña  *@
+            <div class="mb-4">
+                <label class="auth-label">Contraseña</label>
+                <div class="auth-input-group">
+                    <i class="bi bi-lock auth-input-icon"></i>
+                    <input class="auth-input" type="password" @bind="_pass" placeholder="••••••••"
+                           @onkeydown="@(async e => { if (e.Key == "Enter") await DoLogin(); })" />
+                </div>
             </div>
-            <button class="btn btn-primary w-100 py-2" @onclick="DoLogin" disabled="@_loading">
-                @if (_loading) { <span class="spinner-border spinner-border-sm me-2"></span> }
-                Iniciar sesión
+
+            <button class="auth-btn-primary" @onclick="DoLogin" disabled="@_loading">
+                @if (_loading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    <span>Autenticando...</span>
+                }
+                else
+                {
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    <span>Iniciar sesión</span>
+                }
             </button>
         }
         else
         {
             <div class="mb-3">
-                <label class="form-label fw-semibold">Nombre completo *</label>
-                <input class="form-control" @bind="_regNombre" placeholder="Juan Pérez García" />
+                <label class="auth-label">Nombre completo *</label>
+                <div class="auth-input-group">
+                    <i class="bi bi-person auth-input-icon"></i>
+                    <input class="auth-input" @bind="_regNombre" placeholder="Juan Pérez García" />
+                </div>
             </div>
+
             <div class="mb-3">
-                <label class="form-label fw-semibold">Correo electrónico *</label>
-                <input class="form-control" type="email" @bind="_regEmail" placeholder="correo@ejemplo.com" />
+                <label class="auth-label">Correo electrónico *</label>
+                <div class="auth-input-group">
+                    <i class="bi bi-envelope auth-input-icon"></i>
+                    <input class="auth-input" type="email" @bind="_regEmail" placeholder="correo@ejemplo.com" />
+                </div>
             </div>
+
             <div class="row g-3 mb-3">
                 <div class="col-6">
-                    <label class="form-label fw-semibold">Contraseña *</label>
-                    <input class="form-control" type="password" @bind="_regPass" placeholder="Mínimo 6 caracteres" />
+                    <label class="auth-label">Contraseña *</label>
+                    <div class="auth-input-group">
+                        <i class="bi bi-lock auth-input-icon"></i>
+                        <input class="auth-input" type="password" @bind="_regPass" placeholder="Mínimo 6 caracteres" />
+                    </div>
                 </div>
                 <div class="col-6">
-                    <label class="form-label fw-semibold">Teléfono</label>
-                    <input class="form-control" @bind="_regTel" placeholder="7000-0000" />
+                    <label class="auth-label">Teléfono</label>
+                    <div class="auth-input-group">
+                        <i class="bi bi-phone auth-input-icon"></i>
+                        <input class="auth-input" @bind="_regTel" placeholder="7000-0000" />
+                    </div>
                 </div>
             </div>
-            <div class="row g-3 mb-3">
+
+            <div class="row g-3 mb-4">
                 <div class="col-6">
-                    <label class="form-label fw-semibold">DUI</label>
-                    <input class="form-control" @bind="_regDui" placeholder="00000000-0" />
+                    <label class="auth-label">DUI</label>
+                    <div class="auth-input-group">
+                        <i class="bi bi-card-text auth-input-icon"></i>
+                        <input class="auth-input" @bind="_regDui" placeholder="00000000-0" />
+                    </div>
                 </div>
                 <div class="col-6">
-                    <label class="form-label fw-semibold">Nombre del hogar *</label>
-                    <input class="form-control" @bind="_regHogar" placeholder="Familia García" />
+                    <label class="auth-label">Nombre del hogar *</label>
+                    <div class="auth-input-group">
+                        <i class="bi bi-house auth-input-icon"></i>
+                        <input class="auth-input" @bind="_regHogar" placeholder="Familia García" />
+                    </div>
                 </div>
             </div>
-            <button class="btn btn-success w-100 py-2" @onclick="DoRegister" disabled="@_loading">
-                @if (_loading) { <span class="spinner-border spinner-border-sm me-2"></span> }
-                Crear cuenta
+
+            <button class="auth-btn-secondary" @onclick="DoRegister" disabled="@_loading">
+                @if (_loading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    <span>Creando cuenta...</span>
+                }
+                else
+                {
+                    <i class="bi bi-person-plus me-2"></i>
+                    <span>Crear cuenta</span>
+                }
             </button>
         }
-        <p class="text-center text-muted small mt-4 mb-0">🇸🇻 Hecho para El Salvador — USD &amp; Bitcoin</p>
+
+        <div class="auth-badge mt-4">
+            🇸🇻 &nbsp;Hecho para El Salvador &nbsp;·&nbsp; USD &amp; Bitcoin
+        </div>
+
     </div>
 </div>
 
 @code {
-    string _tab = "login", _email = "", _pass = "", _error = "";
+    string _tab = "login";
+    string _email = "", _pass = "", _error = "";
     string _regNombre = "", _regEmail = "", _regPass = "", _regTel = "", _regDui = "", _regHogar = "";
     bool _loading;
+
+    async Task LoginAdmin()   => await QuickLogin("admin@financehogar.com",   "Admin1234!");
+    async Task LoginUsuario() => await QuickLogin("usuario@financehogar.com", "User1234!");
+
+    async Task QuickLogin(string email, string pass)
+    {
+        _email = email; _pass = pass;
+        await DoLogin();
+    }
 
     async Task DoLogin()
     {
@@ -112,7 +194,7 @@
     async Task DoRegister()
     {
         if (string.IsNullOrWhiteSpace(_regNombre) || string.IsNullOrWhiteSpace(_regEmail) ||
-            string.IsNullOrWhiteSpace(_regPass) || string.IsNullOrWhiteSpace(_regHogar))
+            string.IsNullOrWhiteSpace(_regPass)   || string.IsNullOrWhiteSpace(_regHogar))
         { _error = "Los campos marcados con * son requeridos"; return; }
         _loading = true; _error = "";
         var req = new RegisterRequest(_regNombre, _regEmail, _regPass,
