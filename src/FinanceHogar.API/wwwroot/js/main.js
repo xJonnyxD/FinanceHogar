@@ -225,7 +225,7 @@ document.addEventListener('alpine:init', () => {
       if (!this.form.monto || isNaN(parseFloat(this.form.monto)) || parseFloat(this.form.monto) <= 0) return store.showToast('Ingresa un monto válido mayor a 0', 'danger');
       if (!this.form.fechaGasto) return store.showToast('La fecha es requerida', 'danger');
       try {
-        const payload = { ...this.form, monto: parseFloat(this.form.monto) };
+        const payload = { ...this.form, monto: parseFloat(this.form.monto), moneda: parseInt(this.form.moneda), tipo: parseInt(this.form.tipo), frecuencia: this.form.frecuencia ? parseInt(this.form.frecuencia) : null };
         if (this.modal === 'create') {
           this.items.unshift(await api.createGasto(payload));
           store.showToast('Gasto registrado ✓');
@@ -285,7 +285,7 @@ document.addEventListener('alpine:init', () => {
       if (!this.form.categoriaId) return store.showToast('Debes seleccionar una categoría', 'danger');
       if (!this.form.monto || isNaN(parseFloat(this.form.monto)) || parseFloat(this.form.monto) <= 0) return store.showToast('Ingresa un monto válido mayor a 0', 'danger');
       try {
-        const payload = { ...this.form, monto: parseFloat(this.form.monto) };
+        const payload = { ...this.form, monto: parseFloat(this.form.monto), moneda: parseInt(this.form.moneda), tipo: parseInt(this.form.tipo), frecuencia: this.form.frecuencia ? parseInt(this.form.frecuencia) : null };
         if (this.modal === 'create') {
           this.items.unshift(await api.createIngreso(payload));
           store.showToast('Ingreso registrado ✓');
@@ -539,7 +539,7 @@ document.addEventListener('alpine:init', () => {
       if (!this.form.monto || isNaN(parseFloat(this.form.monto)) || parseFloat(this.form.monto) <= 0) return store.showToast('Ingresa un monto válido mayor a 0', 'danger');
       try {
         if (this.modal === 'create') {
-          this.items.unshift(await api.createRemesa({ ...this.form, monto: parseFloat(this.form.monto) }));
+          this.items.unshift(await api.createRemesa({ ...this.form, monto: parseFloat(this.form.monto), moneda: parseInt(this.form.moneda) }));
           store.showToast('Remesa registrada ✓');
         } else {
           const act = await api.updateRemesa(this.editing.id, { monto: parseFloat(this.form.monto), empresa: this.form.empresa, numeroConfirmacion: this.form.numeroConfirmacion, fechaRecepcion: this.form.fechaRecepcion });
