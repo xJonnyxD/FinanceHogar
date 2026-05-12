@@ -56,7 +56,26 @@ public class AuthService(HttpClient http, ILocalStorageService localStorage,
             if (!resp.IsSuccessStatusCode)
             {
                 var err = await resp.Content.ReadAsStringAsync();
-                return (false, "Error en el registro. Verifica los datos.");
+                try
+                {
+                    var errObj = System.Text.Json.JsonDocument.Parse(err);
+                    // FluentValidation / ProblemDetails: extraer errores de campos
+                    if (errObj.RootElement.TryGetProperty("errors", out var errors))
+                    {
+                        var msgs = new List<string>();
+                        foreach (var field in errors.EnumerateObject())
+                            foreach (var msg in field.Value.EnumerateArray())
+                                msgs.Add(msg.GetString() ?? "");
+                        if (msgs.Count > 0)
+                            return (false, string.Join(" | ", msgs));
+                    }
+                    if (errObj.RootElement.TryGetProperty("message", out var message))
+                        return (false, message.GetString());
+                    if (errObj.RootElement.TryGetProperty("title", out var title))
+                        return (false, title.GetString());
+                }
+                catch { }
+                return (false, string.IsNullOrWhiteSpace(err) ? $"Error {(int)resp.StatusCode}" : err);
             }
             var data = await resp.Content.ReadFromJsonAsync<LoginResponse>();
             if (data is null) return (false, "Respuesta inválida");

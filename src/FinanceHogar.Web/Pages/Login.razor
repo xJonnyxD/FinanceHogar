@@ -98,7 +98,7 @@
                 <label class="auth-label">Nombre completo *</label>
                 <div class="auth-input-group">
                     <i class="bi bi-person auth-input-icon"></i>
-                    <input class="auth-input" @bind="_regNombre" placeholder="Juan Pérez García" />
+                    <input class="auth-input" @bind="_regNombre" @bind:event="oninput" placeholder="Juan Pérez García" />
                 </div>
             </div>
 
@@ -106,7 +106,7 @@
                 <label class="auth-label">Correo electrónico *</label>
                 <div class="auth-input-group">
                     <i class="bi bi-envelope auth-input-icon"></i>
-                    <input class="auth-input" type="email" @bind="_regEmail" placeholder="correo@ejemplo.com" />
+                    <input class="auth-input" type="email" @bind="_regEmail" @bind:event="oninput" placeholder="correo@ejemplo.com" />
                 </div>
             </div>
 
@@ -115,14 +115,14 @@
                     <label class="auth-label">Contraseña *</label>
                     <div class="auth-input-group">
                         <i class="bi bi-lock auth-input-icon"></i>
-                        <input class="auth-input" type="password" @bind="_regPass" placeholder="Mínimo 6 caracteres" />
+                        <input class="auth-input" type="password" @bind="_regPass" @bind:event="oninput" placeholder="Mín. 8 car., 1 mayúscula, 1 número" />
                     </div>
                 </div>
                 <div class="col-6">
                     <label class="auth-label">Teléfono</label>
                     <div class="auth-input-group">
                         <i class="bi bi-phone auth-input-icon"></i>
-                        <input class="auth-input" @bind="_regTel" placeholder="7000-0000" />
+                        <input class="auth-input" @bind="_regTel" @bind:event="oninput" placeholder="7000-0000" />
                     </div>
                 </div>
             </div>
@@ -132,14 +132,14 @@
                     <label class="auth-label">DUI</label>
                     <div class="auth-input-group">
                         <i class="bi bi-card-text auth-input-icon"></i>
-                        <input class="auth-input" @bind="_regDui" placeholder="00000000-0" />
+                        <input class="auth-input" @bind="_regDui" @bind:event="oninput" placeholder="00000000-0" />
                     </div>
                 </div>
                 <div class="col-6">
                     <label class="auth-label">Nombre del hogar *</label>
                     <div class="auth-input-group">
                         <i class="bi bi-house auth-input-icon"></i>
-                        <input class="auth-input" @bind="_regHogar" placeholder="Familia García" />
+                        <input class="auth-input" @bind="_regHogar" @bind:event="oninput" placeholder="Familia García" />
                     </div>
                 </div>
             </div>
@@ -197,10 +197,13 @@
             string.IsNullOrWhiteSpace(_regPass)   || string.IsNullOrWhiteSpace(_regHogar))
         { _error = "Los campos marcados con * son requeridos"; return; }
         _loading = true; _error = "";
-        var req = new RegisterRequest(_regNombre, _regEmail, _regPass,
-            string.IsNullOrWhiteSpace(_regTel) ? null : _regTel,
-            string.IsNullOrWhiteSpace(_regDui) ? null : _regDui,
-            _regHogar);
+        var req = new RegisterRequest(
+            NombreCompleto: _regNombre,
+            Email:          _regEmail,
+            Password:       _regPass,
+            Telefono:       string.IsNullOrWhiteSpace(_regTel) ? null : _regTel,
+            Dui:            string.IsNullOrWhiteSpace(_regDui) ? null : _regDui,
+            NombreHogar:    _regHogar);
         var (ok, err) = await AuthSvc.RegisterAsync(req);
         _loading = false;
         if (ok) Nav.NavigateTo("/", forceLoad: false);
